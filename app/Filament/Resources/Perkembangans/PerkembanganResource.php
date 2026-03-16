@@ -1,0 +1,68 @@
+<?php
+
+namespace App\Filament\Resources\Perkembangans;
+
+use App\Filament\Resources\Perkembangans\Pages\CreatePerkembangan;
+use App\Filament\Resources\Perkembangans\Pages\EditPerkembangan;
+use App\Filament\Resources\Perkembangans\Pages\ListPerkembangans;
+use App\Filament\Resources\Perkembangans\Pages\ViewPerkembangan;
+use App\Filament\Resources\Perkembangans\Schemas\PerkembanganForm;
+use App\Filament\Resources\Perkembangans\Schemas\PerkembanganInfolist;
+use App\Filament\Resources\Perkembangans\Tables\PerkembangansTable;
+use App\Models\Perkembangan;
+use BackedEnum;
+use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
+use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
+
+class PerkembanganResource extends Resource
+{
+    protected static ?string $model = Perkembangan::class;
+
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+
+    protected static ?string $recordTitleAttribute = 'Perkembangan';
+
+    public static function form(Schema $schema): Schema
+    {
+        return PerkembanganForm::configure($schema);
+    }
+
+    public static function infolist(Schema $schema): Schema
+    {
+        return PerkembanganInfolist::configure($schema);
+    }
+
+    public static function table(Table $table): Table
+    {
+        return PerkembangansTable::configure($table);
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            //
+        ];
+    }
+
+    public static function getPages(): array
+    {
+        return [
+            'index' => ListPerkembangans::route('/'),
+            'create' => CreatePerkembangan::route('/create'),
+            'view' => ViewPerkembangan::route('/{record}'),
+            'edit' => EditPerkembangan::route('/{record}/edit'),
+        ];
+    }
+
+    public static function getRecordRouteBindingEloquentQuery(): Builder
+    {
+        return parent::getRecordRouteBindingEloquentQuery()
+            ->withoutGlobalScopes([
+                SoftDeletingScope::class,
+            ]);
+    }
+}
