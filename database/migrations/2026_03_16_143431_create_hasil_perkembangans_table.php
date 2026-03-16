@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('domain_perkembangans', function (Blueprint $table) {
-            $table->id();
+        Schema::create('hasil_perkembangans', function (Blueprint $table) {
+            $table->bigIncrements('id');
             $table->timestamps();
-            $table->softDeletes(); // adds deleted_at
+            $table->softDeletes();
         });
     }
 
@@ -23,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('domain_perkembangans');
+        Schema::dropIfExists('hasil_perkembangans');
     }
 };

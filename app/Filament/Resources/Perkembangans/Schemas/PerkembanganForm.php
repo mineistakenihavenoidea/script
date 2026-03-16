@@ -9,6 +9,7 @@ use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\FileUpload;
 use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 use App\Models\Siswa;
 use App\Models\DomainPerkembangan;
 
@@ -44,7 +45,17 @@ class PerkembanganForm
                                     ->pluck('nama_siswa', 'nama_siswa'))
                                 ->required()
                                 ->searchable()
-                                ->live(),
+                                ->live()
+                                ->afterStateUpdated(function ($state, Set $set) {
+                                    // logika auto fetch
+                                    if ($state) {
+                                        $siswa = Siswa::where('nama_siswa', $state)->first();
+                                        if ($siswa) {
+                                            // asumsi nama kolom adalah kelompok_usia
+                                            $set('kelompok_usia', $siswa->kelompok_usia ?? null);
+                                        }
+                                    }
+                                }),
                         ],
                         default => [],
                     })
@@ -62,7 +73,6 @@ class PerkembanganForm
 
                 Grid::make(1)
                     ->schema(function (Get $get) {
-
                         $age = $get('kelompok_usia');
 
                         if (!$age) return [];
@@ -74,16 +84,17 @@ class PerkembanganForm
                         $fields = [];
 
                         foreach ($indikators as $domain => $items) {
-
                             foreach ($items as $indikator) {
-
                                 $fields[] = Radio::make("indikator_{$indikator->id}")
                                     ->label($indikator->indikator)
                                     ->options([
                                         'yes' => 'Ya',
                                         'no' => 'Tidak',
                                     ])
-                                    ->inline();
+                                    ->formatStateUsing(fn () => null)
+                                    ->dehydrated(true)
+                                    ->inline()
+                                    ->required();
                             }
                         }
 

@@ -12,8 +12,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('staff', function (Blueprint $table) {
-            $table->id();
+            $table->bigIncrements('id');
+            $table->string('nama_guru')->nullable();
+            $table->string('jabatan')->nullable();
+            $table->string('wali_kelas', 3)->nullable();
+            $table->string('is_admin')->nullable();
+            $table->string('foto')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

@@ -11,11 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('rekomendasi_foreigns', function (Blueprint $table) {
-            $table->id();
+        Schema::create('domain_perkembangans', function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->string('domain')->nullable();
+            $table->string('kelompok_usia')->nullable();
+            $table->string('indikator')->nullable();
             $table->timestamps();
-
-            $table->softDeletes(); // adds deleted_at
+            $table->softDeletes();
         });
     }
 
@@ -24,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('rekomendasi_foreigns');
+        Schema::dropIfExists('domain_perkembangans');
     }
 };

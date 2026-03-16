@@ -12,9 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('rekom_foreigns', function (Blueprint $table) {
-            $table->id();
+            $table->bigIncrements('id');
+            $table->string('nama_siswa')->nullable();
+            $table->string('nama_rekomendasi')->nullable();
+            $table->string('jenis_rekomendasi')->nullable();
             $table->timestamps();
-            $table->softdeletes();
+            $table->softDeletes();
         });
     }
 

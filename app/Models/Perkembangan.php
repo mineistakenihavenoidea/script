@@ -36,34 +36,6 @@ class Perkembangan extends Model
         return 'butuh perhatian khusus';
     }
     //
-    protected function mutateFormDataBeforeCreate(array $data): array
-    {
-        $domains = [
-            'motorik_halus',
-            'motorik_kasar',
-            'bahasa',
-            'sosial_kemandirian',
-        ];
-
-        foreach ($domains as $domain) {
-
-            $indicators = DomainPerkembangan::where('domain', $domain)->pluck('id');
-
-            $yes = 0;
-
-            foreach ($indicators as $id) {
-                if (($data["indikator_$id"] ?? null) === 'yes') {
-                    $yes++;
-                }
-            }
-
-            $total = count($indicators);
-
-            $data["nilai_$domain"] = ($yes / $total) * 100;
-        }
-
-        return $data;
-    }
 
     public function siswa()
     {

@@ -11,9 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('siswa', function (Blueprint $table) {
-            $table->softDeletes(); // adds deleted_at
-            //
+        Schema::create('cache', function (Blueprint $table) {
+            $table->string('key')->primary();
+            $table->mediumText('value');
+            $table->integer('expiration');
         });
     }
 
@@ -22,9 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('siswa', function (Blueprint $table) {
-            $table->dropSoftDeletes();
-            //
-        });
+        Schema::dropIfExists('cache');
     }
 };

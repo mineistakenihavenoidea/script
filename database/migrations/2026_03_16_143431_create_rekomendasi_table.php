@@ -11,10 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('staff_foreigns', function (Blueprint $table) {
-            $table->id();
+        Schema::create('rekomendasi', function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->string('nama_rekomendasi')->index('nama_rekomendasi');
+            $table->string('jenis_rekomendasi')->index('jenis_rekomendasi');
             $table->timestamps();
-            $table->softDeletes(); // adds deleted_at
+            $table->softDeletes();
         });
     }
 
@@ -23,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('staff_foreigns');
+        Schema::dropIfExists('rekomendasi');
     }
 };
