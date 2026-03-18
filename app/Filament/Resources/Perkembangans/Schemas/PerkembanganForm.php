@@ -8,10 +8,14 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\Hidden;
+use Illuminate\Support\HtmlString;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use App\Models\Siswa;
 use App\Models\DomainPerkembangan;
+use Carbon\Carbon;
 
 class PerkembanganForm
 {
@@ -19,58 +23,75 @@ class PerkembanganForm
     {
         return $schema
             ->components([
-                Select::make('kelas')
-                    ->options([
-                                'A1' => 'A1',
-                                'A2' => 'A2',
-                                'A3' => 'A3',
-                                'A4' => 'A4',
-                                'B1' => 'B1',
-                                'B2' => 'B2',
-                            ])
-                    ->live()
-                    ->afterStateUpdated(fn (Select $component) => $component
-                        ->getContainer()
-                        ->getComponent('dynamicTypeFields')
-                        ->getChildSchema()
-                        ->fill()),
-                    
-                Grid::make(1)
-                    ->schema(fn (Get $get): array => match ($get('kelas')) {
-                        'A1', 'A2', 'A3', 'A4', 'B1', 'B2' => [
-                            Select::make('nama_siswa')
-                                ->label('Nama Siswa')
-                                ->options(fn (Get $get) => Siswa::query()
-                                    ->where('kelas', $get('kelas'))
-                                    ->pluck('nama_siswa', 'nama_siswa'))
-                                ->required()
-                                ->searchable()
-                                ->live()
-                                ->afterStateUpdated(function ($state, Set $set) {
-                                    // logika auto fetch
-                                    if ($state) {
-                                        $siswa = Siswa::where('nama_siswa', $state)->first();
-                                        if ($siswa) {
-                                            // asumsi nama kolom adalah kelompok_usia
-                                            $set('kelompok_usia', $siswa->kelompok_usia ?? null);
+                Grid::make(2)
+                    ->schema([
+                        Select::make('nama_siswa')
+                            ->label('Nama Siswa')
+                            ->options(Siswa::query()->pluck('nama_siswa', 'nama_siswa'))
+                            ->live()
+                            ->required()
+                            ->searchable()
+                            ->afterStateUpdated(function ($state, Set $set){
+                                if ($state) {
+                                    $siswa = Siswa::where('nama_siswa', $state)->first();
+                                    if ($siswa) {
+                                        $set('kelas', $siswa->kelas ?? null);
+                                        $set('foto', $siswa->foto ?? null);
+                                        
+                                        if ($siswa->tanggal_lahir) {
+                                            $umur = Carbon::parse($siswa->tanggal_lahir)->age;
+                                            if ($umur <= 4) $set('kelompok_usia', '4 Tahun');
+                                            elseif ($umur > 4 && $umur < 6) $set('kelompok_usia', '5 Tahun');
+                                            elseif ($umur >= 6) $set('kelompok_usia', '6 Tahun');
                                         }
                                     }
-                                }),
-                        ],
-                        default => [],
-                    })
-                    ->key('dynamicTypeFields'),
-                
-                Select::make('kelompok_usia')
-                    ->label('Kelompok Usia')
-                    ->options([
-                        '4 Tahun' => '4 Tahun',
-                        '5 Tahun' => '5 Tahun',
-                        '6 Tahun' => '6 Tahun',
-                    ])
-                    ->required()
-                    ->live(),
+                                } else {
+                                    $set('kelas', null);
+                                    $set('foto', null);
+                                    $set('kelompok_usia', null);
+                                }
+                            }),
 
+                        TextInput::make('kelas')
+                            ->label('Kelas')
+                            ->readOnly()
+                            ->required(),
+                    ]),
+                
+                    
+                Grid::make(2)
+                    ->schema([
+                        TextInput::make('kelompok_usia')
+                            ->label('Kelompok Usia')
+                            ->readOnly()
+                            ->dehydrated(false)
+                            ->live()
+                            ->afterStateHydrated(function (Get $get, Set $set) {
+                                $namaSiswa = $get('nama_siswa');
+                                if ($namaSiswa) {
+                                    $siswa = Siswa::where('nama_siswa', $namaSiswa)->first();
+                                    if ($siswa && $siswa->tanggal_lahir) {
+                                        $umur = Carbon::parse($siswa->tanggal_lahir)->age;
+                                        if ($umur <= 4) $set('kelompok_usia', '4 Tahun');
+                                        elseif ($umur > 4 && $umur < 6) $set('kelompok_usia', '5 Tahun');
+                                        elseif ($umur >= 6) $set('kelompok_usia', '6 Tahun');
+                                    }
+                                }
+                            })
+                            ->required(),
+                        Hidden::make('foto'),
+
+                        Placeholder::make('foto_preview')
+                            ->label('Foto Siswa')
+                            ->content(function (Get $get) {
+                                $foto = $get('foto');
+                                if ($foto) {
+                                    return new HtmlString('<img src="/storage/' . $foto . '" style="max-height: 150px; border-radius: 8px; border: 1px solid #444; object-fit:cover;">');
+                                }
+                                return 'Tidak ada foto';
+                            }),
+                    ]),
+                
                 Grid::make(1)
                     ->schema(function (Get $get) {
                         $age = $get('kelompok_usia');
@@ -84,6 +105,11 @@ class PerkembanganForm
                         $fields = [];
 
                         foreach ($indikators as $domain => $items) {
+                            $domainTitle = ucwords(str_replace('_', ' ', $domain));
+                            $fields[] = Placeholder::make("judul_{$domain}")
+                                ->label('')
+                                ->content(new HtmlString("<div style='font-weight: 600; font-size: 1.1em; margin-top: 1rem;'>Domain: {$domainTitle}</div>"));
+
                             foreach ($items as $indikator) {
                                 $fields[] = Radio::make("indikator_{$indikator->id}")
                                     ->label($indikator->indikator)
@@ -99,7 +125,6 @@ class PerkembanganForm
                         }
 
                         return $fields;
-
                     })
                     ->key('indicatorFields')
                     //

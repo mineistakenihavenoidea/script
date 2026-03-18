@@ -4,7 +4,9 @@ namespace App\Filament\Resources\Perkembangans\Pages;
 
 use App\Filament\Resources\Perkembangans\PerkembanganResource;
 use Filament\Resources\Pages\CreateRecord;
+use App\Models\Siswa;
 use App\Models\DomainPerkembangan;
+use Carbon\Carbon;
 
 class CreatePerkembangan extends CreateRecord
 {
@@ -12,20 +14,32 @@ class CreatePerkembangan extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        $domains = [
-            'motorik_halus',
-            'motorik_kasar',
-            'bahasa',
-            'sosial_kemandirian',
+        $siswa = Siswa::where('nama_siswa', $data['nama_siswa'] ?? '')->first();
+        $kelompokUsiaDb = '';
+
+        if ($siswa && $siswa->tanggal_lahir) {
+            $umur = Carbon::parse($siswa->tanggal_lahir)->age;
+            if ($umur <= 4) $kelompokUsiaDb = '4 Tahun';
+            elseif ($umur > 4 && $umur < 6) $kelompokUsiaDb = '5 Tahun';
+            elseif ($umur >= 6) $kelompokUsiaDb = '6 Tahun';
+        }
+
+        $domainsMap = [
+            'motorik_halus' => 'motorik halus',
+            'motorik_kasar' => 'motorik kasar',
+            'bahasa' => 'bahasa',
+            'sosial_kemandirian' => 'sosial kemandirian',
         ];
 
-        foreach ($domains as $domain) {
+        foreach ($domainsMap as $columnName => $domainName) {
+            $indicators = DomainPerkembangan::where('domain', $domainName)
+                ->where('kelompok_usia', $kelompokUsiaDb)
+                ->pluck('id');
 
-            $indicators = DomainPerkembangan::where('domain', $domain)->pluck('id');
             $yes = 0;
             $total = count($indicators);
         
-            if ($total >0) {
+            if ($total > 0) {
                 foreach ($indicators as $id) {
                     if (($data["indikator_$id"] ?? null) === 'yes') {
                         $yes++;
@@ -34,11 +48,12 @@ class CreatePerkembangan extends CreateRecord
                     unset($data["indikator_$id"]);
                 }
 
-                $data["nilai_$domain"] = ($yes / $total) * 100;
+                $data["nilai_$columnName"] = ($yes / $total) * 100;
             } else {
-                $data["nilai_$domain"] = 0;
+                $data["nilai_$columnName"] = 0;
             }
         }
+
         return $data;
     }
 }

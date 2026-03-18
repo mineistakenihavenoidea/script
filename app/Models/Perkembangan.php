@@ -21,6 +21,7 @@ class Perkembangan extends Model
         'nilai_bahasa',
         'nilai_sosial_kemandirian',
         'kelas',
+        'foto',
     ];
 
     public function classifyScore($score)

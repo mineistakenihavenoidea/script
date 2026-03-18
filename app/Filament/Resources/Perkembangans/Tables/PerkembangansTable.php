@@ -26,24 +26,30 @@ class PerkembangansTable
         return $table
             ->columns([
                 Stack::make([
+                    ImageColumn::make('foto')
+                        ->label('Foto')
+                        ->circular()
+                        ->size(150),
                     TextColumn::make('nama_siswa')
                         ->label('Nama Siswa')
-                        ->searchable(),
-                    TextColumn::make('nama_guru')
-                        ->label('Nama Guru')
                         ->searchable()
                         ->sortable(),
-                        TextColumn::make('kelas')
+                    TextColumn::make('kelas')
                         ->label('Kelas')
-                        ->sortable(),
+                        ->sortable()
+                        ->searchable(),
                     TextColumn::make('nilai_motorik_halus')
-                        ->label('Nilai Motorik Halus'),
+                        ->label('Nilai Motorik Halus')
+                        ->sortable(),
                     TextColumn::make('nilai_motorik_kasar')
-                        ->label('Nilai Motorik Kasar'),
+                        ->label('Nilai Motorik Kasar')
+                        ->sortable(),
                     TextColumn::make('nilai_bahasa')
-                        ->label('Nilai Bahasa'),
+                        ->label('Nilai Bahasa')
+                        ->sortable(),
                     TextColumn::make('nilai_sosial_kemandirian')
-                        ->label('Nilai Sosial Kemandirian'),
+                        ->label('Nilai Sosial Kemandirian')
+                        ->sortable(),
                     //
                 ])
             ])
