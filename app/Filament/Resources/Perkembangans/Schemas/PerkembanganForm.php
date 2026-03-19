@@ -117,7 +117,12 @@ class PerkembanganForm
                                         'yes' => 'Ya',
                                         'no' => 'Tidak',
                                     ])
-                                    ->formatStateUsing(fn () => null)
+                                    ->formatStateUsing(function (?Model $record) use ($indikator) {
+                                        if ($record && is_array($record->detail_indikator)) {
+                                            return $record->detail_indikator["indikator_{$indikator->id}"] ?? null;
+                                        }
+                                        return null;
+                                    })
                                     ->dehydrated(true)
                                     ->inline()
                                     ->required();

@@ -6,6 +6,8 @@ use App\Filament\Resources\Perkembangans\PerkembanganResource;
 use Filament\Actions\EditAction;
 use Filament\Resources\Pages\ViewRecord;
 use Filament\Support\Enums\Width;
+use Filament\Schemas\Schema;
+use App\Filament\Resources\Perkembangans\Schemas\PerkembanganInfolist;
 
 class ViewPerkembangan extends ViewRecord
 {
@@ -23,5 +25,9 @@ class ViewPerkembangan extends ViewRecord
         return "Data Perkembangan {$this->record->nama_siswa}";
     }
 
+    public function infolist(Schema $schema): Schema
+    {
+        return PerkembanganInfolist::configure($schema);
+    }
 
 }

@@ -31,6 +31,8 @@ class CreatePerkembangan extends CreateRecord
             'sosial_kemandirian' => 'sosial kemandirian',
         ];
 
+        $detail_indikator =[];
+
         foreach ($domainsMap as $columnName => $domainName) {
             $indicators = DomainPerkembangan::where('domain', $domainName)
                 ->where('kelompok_usia', $kelompokUsiaDb)
@@ -43,6 +45,10 @@ class CreatePerkembangan extends CreateRecord
                 foreach ($indicators as $id) {
                     if (($data["indikator_$id"] ?? null) === 'yes') {
                         $yes++;
+                    }
+
+                    if($jawaban !== null){
+                        $detailIndikator["indikator_$id"] = $jawaban;
                     }
 
                     unset($data["indikator_$id"]);

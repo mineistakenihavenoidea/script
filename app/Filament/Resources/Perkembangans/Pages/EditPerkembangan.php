@@ -26,10 +26,9 @@ class EditPerkembangan extends EditRecord
         ];
     }
 
-    protected function mutateFormDataBeforeSave(array $data): array
+    protected function mutateFormDataBeforeCreate(array $data): array
     {
-        $namaSiswa = $data['nama_siswa'] ?? $this->record->nama_siswa;
-        $siswa = Siswa::where('nama_siswa', $namaSiswa)->first();
+        $siswa = Siswa::where('nama_siswa', $data['nama_siswa'] ?? '')->first();
         $kelompokUsiaDb = '';
 
         if ($siswa && $siswa->tanggal_lahir) {
@@ -46,6 +45,8 @@ class EditPerkembangan extends EditRecord
             'sosial_kemandirian' => 'sosial kemandirian',
         ];
 
+        $detail_indikator =[];
+
         foreach ($domainsMap as $columnName => $domainName) {
             $indicators = DomainPerkembangan::where('domain', $domainName)
                 ->where('kelompok_usia', $kelompokUsiaDb)
@@ -58,6 +59,10 @@ class EditPerkembangan extends EditRecord
                 foreach ($indicators as $id) {
                     if (($data["indikator_$id"] ?? null) === 'yes') {
                         $yes++;
+                    }
+
+                    if($jawaban !== null){
+                        $detailIndikator["indikator_$id"] = $jawaban;
                     }
 
                     unset($data["indikator_$id"]);

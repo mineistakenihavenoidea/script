@@ -22,6 +22,11 @@ class Perkembangan extends Model
         'nilai_sosial_kemandirian',
         'kelas',
         'foto',
+        'detail_indikator',
+    ];
+
+    protected $cast = [
+        'detail_indikator' => 'array',
     ];
 
     public function classifyScore($score)
@@ -34,7 +39,7 @@ class Perkembangan extends Model
             return 'butuh stimulasi';
         }
 
-        return 'butuh perhatian khusus';
+        return 'butuh rujukan';
     }
     //
 
