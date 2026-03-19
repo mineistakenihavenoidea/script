@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Perkembangans\Pages;
 use App\Filament\Resources\Perkembangans\PerkembanganResource;
 use Filament\Actions\EditAction;
 use Filament\Resources\Pages\ViewRecord;
+use Filament\Support\Enums\Width;
 
 class ViewPerkembangan extends ViewRecord
 {
@@ -16,4 +17,11 @@ class ViewPerkembangan extends ViewRecord
             EditAction::make(),
         ];
     }
+
+    public function getTitle(): string
+    {
+        return "Data Perkembangan {$this->record->nama_siswa}";
+    }
+
+
 }

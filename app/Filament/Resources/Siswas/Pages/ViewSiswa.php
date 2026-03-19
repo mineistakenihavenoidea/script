@@ -16,4 +16,9 @@ class ViewSiswa extends ViewRecord
             EditAction::make(),
         ];
     }
+
+    public function getTitle(): string
+    {
+        return "{$this->record->nama_siswa}";
+    }
 }

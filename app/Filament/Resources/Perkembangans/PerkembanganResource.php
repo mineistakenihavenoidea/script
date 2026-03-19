@@ -24,7 +24,7 @@ class PerkembanganResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
-    protected static ?string $recordTitleAttribute = 'Perkembangan';
+    protected static ?string $recordTitleAttribute = 'nama_siswa';
 
     public static function form(Schema $schema): Schema
     {
