@@ -6,7 +6,7 @@ use Filament\Schemas\Schema;
 use Filament\Infolists\Infolist;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
-use Filament\Infolists\Components\Grid;
+use Filament\Schemas\Components\Grid;
 use Illuminate\Support\HtmlString;
 use App\Models\Rekomendasi;
 
