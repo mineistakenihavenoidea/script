@@ -47,8 +47,8 @@ class CreatePerkembangan extends CreateRecord
                         $yes++;
                     }
 
-                    if($jawaban !== null){
-                        $detailIndikator["indikator_$id"] = $jawaban;
+                    if($data !== null){
+                        $detailIndikator["indikator_$id"] = $data;
                     }
 
                     unset($data["indikator_$id"]);

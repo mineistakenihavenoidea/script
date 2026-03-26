@@ -50,6 +50,7 @@ class PerkembanganInfolist
                 ->schema([
                     TextEntry::make('kesimpulan_sistem')
                     ->label('')
+                    ->columnSpanFull()
                     ->html()
                     ->state(function ($record) {
                         $domains = [
