@@ -29,7 +29,17 @@ class PerkembangansTable
                     ImageColumn::make('foto')
                         ->label('Foto')
                         ->circular()
-                        ->size(200),
+                        ->size(250),
+                    TextColumn::make('status__kesimpulan')
+                        ->label('Kesimpulan')
+                        ->badge()
+                        ->color(fn (string $state): string => match ($state) {
+                            'Sesuai Perkembangan' => 'success',
+                            'Butuh Stimulasi' => 'warning',
+                            'Butuh Rujukan' => 'danger',
+                            default => 'gray',
+                        })
+                         ->sortable(),
                     TextColumn::make('nama_siswa')
                         ->label('Nama Siswa')
                         ->formatStateUsing(fn ($state) => "Nama : {$state}")
@@ -88,13 +98,14 @@ class PerkembangansTable
                         })
                         ->label('Nilai Sosial Kemandirian')
                         ->sortable(),
+                    
                     //
                 ])
             ])
 
             ->contentGrid([
                 'md' => 2,
-                'xl' => 5,
+                'xl' => 4,
             ])
 
             ->filters([

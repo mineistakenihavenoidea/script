@@ -59,7 +59,7 @@ class SiswaForm
                                 ->uploadButtonPosition('left')
                                 ->uploadProgressIndicatorPosition('left')
                                 ->label('Foto')
-                                ->directory('foto_guru')
+                                ->directory('foto-siswa')
                                 ->acceptedFileTypes(['image/*']),
                     ])
                 //

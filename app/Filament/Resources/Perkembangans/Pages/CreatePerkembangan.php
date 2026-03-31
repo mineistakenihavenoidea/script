@@ -10,19 +10,16 @@ use Carbon\Carbon;
 
 class CreatePerkembangan extends CreateRecord
 {
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('view', ['record' => $this->getrecord()]);
+    }
+
     protected static string $resource = PerkembanganResource::class;
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        $siswa = Siswa::where('nama_siswa', $data['nama_siswa'] ?? '')->first();
-        $kelompokUsiaDb = '';
-
-        if ($siswa && $siswa->tanggal_lahir) {
-            $umur = Carbon::parse($siswa->tanggal_lahir)->age;
-            if ($umur <= 4) $kelompokUsiaDb = '4 Tahun';
-            elseif ($umur > 4 && $umur < 6) $kelompokUsiaDb = '5 Tahun';
-            elseif ($umur >= 6) $kelompokUsiaDb = '6 Tahun';
-        }
+        $kelompokUsiaDb = $data['kelompok_usia'] ?? null;
 
         $domainsMap = [
             'motorik_halus' => 'motorik halus',
@@ -43,12 +40,15 @@ class CreatePerkembangan extends CreateRecord
         
             if ($total > 0) {
                 foreach ($indicators as $id) {
-                    if (($data["indikator_$id"] ?? null) === 'yes') {
+
+                $jawaban = $data["indikator_$id"] ?? null;
+
+                    if ($jawaban === 'yes') {
                         $yes++;
                     }
 
-                    if($data !== null){
-                        $detailIndikator["indikator_$id"] = $data;
+                    if($jawaban !== null){
+                        $detail_indikator["indikator_$id"] = $jawaban;
                     }
 
                     unset($data["indikator_$id"]);
@@ -59,6 +59,8 @@ class CreatePerkembangan extends CreateRecord
                 $data["nilai_$columnName"] = 0;
             }
         }
+
+        $data['detail_indikator'] = $detail_indikator;
 
         return $data;
     }

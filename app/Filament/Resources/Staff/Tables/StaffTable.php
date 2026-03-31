@@ -31,7 +31,7 @@ class StaffTable
                     ImageColumn::make('foto')
                         ->label('Foto')
                         ->circular()
-                        ->size(250),
+                        ->size(200),
                     TextColumn::make('nama_guru')
                         ->weight(FontWeight::Bold)
                         ->label('Nama Guru')
@@ -49,7 +49,7 @@ class StaffTable
 
             ->contentGrid([
                 'md' => 2,
-                'xl' => 3,
+                'xl' => 5,
             ])
             ->filters([
                 TrashedFilter::make(),

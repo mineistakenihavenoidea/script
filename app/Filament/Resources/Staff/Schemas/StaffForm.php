@@ -63,7 +63,7 @@ class StaffForm
                                 ->uploadButtonPosition('left')
                                 ->uploadProgressIndicatorPosition('left')
                                 ->label('Foto')
-                                ->directory('foto_guru')
+                                ->directory('foto-guru')
                                 ->acceptedFileTypes(['image/*']),
                     ])
                 //

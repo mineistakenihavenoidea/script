@@ -27,7 +27,7 @@ class PerkembanganInfolist
                                 ->label('Kelas'),
                             TextEntry::make('foto')
                                 ->label('Foto')
-                                ->formatStateUsing(fn ($state) => new HtmlString('<img src="/storage/' . $state . '" style="max-height: 80px; border-radius: 8px;">'))
+                                ->formatStateUsing(fn ($state) => new HtmlString('<img src="/storage/' . $state . '" style="max-height: 80px; max-width: 80px; object-fit: cover; border-radius: 8px;">'))
                                 ->visible(fn ($state) => filled($state)),
                         ]),
                     ]),
@@ -37,14 +37,12 @@ class PerkembanganInfolist
                     ->schema([
                         Grid::make(4)
                             ->schema([
-                                Grid::make(4)
-                                    ->schema([
-                                        self::makeDomainEntry('motorik_halus', 'Motorik Halus'),
-                                        self::makeDomainEntry('motorik_kasar', 'Motorik Kasar'),
-                                        self::makeDomainEntry('bahasa', 'Bahasa'),
-                                        self::makeDomainEntry('sosial_kemandirian', 'Sosial Kemandirian'),
-                                    ]),
+                                self::makeDomainEntry('motorik_halus', 'Motorik Halus'),
+                                self::makeDomainEntry('motorik_kasar', 'Motorik Kasar'),
+                                self::makeDomainEntry('bahasa', 'Bahasa'),
+                                self::makeDomainEntry('sosial_kemandirian', 'Sosial Kemandirian'),
                             ]),
+                    ]),
                         
                 Section::make('Kesimpulan dan Rekomendasi')
                 ->schema([
@@ -54,10 +52,10 @@ class PerkembanganInfolist
                     ->html()
                     ->state(function ($record) {
                         $domains = [
-                            'motorik_halus' => $record->nilai_motorik_halus,
-                            'motorik_kasar' => $record->nilai_motorik_kasar,
+                            'motorik halus' => $record->nilai_motorik_halus,
+                            'motorik kasar' => $record->nilai_motorik_kasar,
                             'bahasa' => $record->nilai_bahasa,
-                            'sosial_kemandirian' => $record->nilai_sosial_kemandirian,
+                            'sosial kemandirian' => $record->nilai_sosial_kemandirian,
                         ];
 
                         $butuhStimulasi = [];
@@ -107,15 +105,14 @@ class PerkembanganInfolist
                         }
                     }),
                 ]),
-            ]),
-        ]);
+            ]);
     }
 
     protected static function makeDomainEntry(string $column, string $label): TextEntry
     {
         return TextEntry::make("nilai_{$column}")
             ->label($label)
-            ->formatStateUsing(fn ($state, $record) => round($state) . '%% - ' . ucwords($record->classifyScore($state)))
+            ->formatStateUsing(fn ($state, $record) => round($state) . '/100 ' . ucwords($record->classifyScore($state)))
             ->color(fn ($state) => $state >= 80 ? 'success' : ($state >= 60 ? 'warning' : 'danger'))
             ->badge();
     }

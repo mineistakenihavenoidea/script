@@ -29,7 +29,7 @@ class SiswasTable
                     ImageColumn::make('foto')
                         ->label('foto')
                         ->circular()
-                        ->size(150),
+                        ->size(200),
                     TextColumn::make('nama_siswa')
                         ->weight(FontWeight::Bold)
                         ->label('Nama Siswa')

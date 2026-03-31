@@ -41,7 +41,7 @@ class PerkembanganForm
                                         if ($siswa->tanggal_lahir) {
                                             $umur = Carbon::parse($siswa->tanggal_lahir)->age;
                                             if ($umur <= 4) $set('kelompok_usia', '4 Tahun');
-                                            elseif ($umur > 4 && $umur < 6) $set('kelompok_usia', '5 Tahun');
+                                            elseif ($umur == 5) $set('kelompok_usia', '5 Tahun');
                                             elseif ($umur >= 6) $set('kelompok_usia', '6 Tahun');
                                         }
                                     }
@@ -61,24 +61,16 @@ class PerkembanganForm
                     
                 Grid::make(2)
                     ->schema([
-                        TextInput::make('kelompok_usia')
+                        Select::make('kelompok_usia')
                             ->label('Kelompok Usia')
-                            ->readOnly()
-                            ->dehydrated(false)
                             ->live()
-                            ->afterStateHydrated(function (Get $get, Set $set) {
-                                $namaSiswa = $get('nama_siswa');
-                                if ($namaSiswa) {
-                                    $siswa = Siswa::where('nama_siswa', $namaSiswa)->first();
-                                    if ($siswa && $siswa->tanggal_lahir) {
-                                        $umur = Carbon::parse($siswa->tanggal_lahir)->age;
-                                        if ($umur <= 4) $set('kelompok_usia', '4 Tahun');
-                                        elseif ($umur > 4 && $umur < 6) $set('kelompok_usia', '5 Tahun');
-                                        elseif ($umur >= 6) $set('kelompok_usia', '6 Tahun');
-                                    }
-                                }
-                            })
-                            ->required(),
+                            ->required()
+                            ->options([
+                                '4 Tahun' => '4 Tahun',
+                                '5 Tahun' => '5 Tahun',
+                                '6 Tahun' => '6 Tahun',
+                            ]),
+                            
                         Hidden::make('foto'),
 
                         Placeholder::make('foto_preview')
@@ -86,7 +78,7 @@ class PerkembanganForm
                             ->content(function (Get $get) {
                                 $foto = $get('foto');
                                 if ($foto) {
-                                    return new HtmlString('<img src="/storage/' . $foto . '" style="max-height: 150px; border-radius: 8px; border: 1px solid #444; object-fit:cover;">');
+                                    return new HtmlString('<img src="/storage/' . $foto . '" style="max-height: 150px; max-width: 150px; object-fit: cover; border-radius: 8px; border: 1px solid #444;">');
                                 }
                                 return 'Tidak ada foto';
                             }),
@@ -106,9 +98,8 @@ class PerkembanganForm
 
                         foreach ($indikators as $domain => $items) {
                             $domainTitle = ucwords(str_replace('_', ' ', $domain));
-                            $fields[] = Placeholder::make("judul_{$domain}")
-                                ->label('')
-                                ->content(new HtmlString("<div style='font-weight: 600; font-size: 1.1em; margin-top: 1rem;'>Domain: {$domainTitle}</div>"));
+                            $fields[] = Placeholder::make("Domain: {$domain}")
+                                ->label(new HtmlString("<div style='font-weight: 600; font-size: 1.1em; margin-top: 1rem;'>Domain: {$domainTitle}</div>"));
 
                             foreach ($items as $indikator) {
                                 $fields[] = Radio::make("indikator_{$indikator->id}")
@@ -117,7 +108,7 @@ class PerkembanganForm
                                         'yes' => 'Ya',
                                         'no' => 'Tidak',
                                     ])
-                                    ->formatStateUsing(function (?Model $record) use ($indikator) {
+                                    ->formatStateUsing(function (?\App\Models\Perkembangan $record) use ($indikator) {
                                         if ($record && is_array($record->detail_indikator)) {
                                             return $record->detail_indikator["indikator_{$indikator->id}"] ?? null;
                                         }

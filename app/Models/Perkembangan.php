@@ -23,9 +23,10 @@ class Perkembangan extends Model
         'kelas',
         'foto',
         'detail_indikator',
+        'periode',
     ];
 
-    protected $cast = [
+    protected $casts = [
         'detail_indikator' => 'array',
     ];
 
@@ -42,6 +43,28 @@ class Perkembangan extends Model
         return 'butuh rujukan';
     }
     //
+
+    public function getStatusKesimpulanAttribute()
+    {
+        $scores = [
+            $this->nilai_motorik_halus ?? 0,
+            $this->nilai_motorik_kasar ?? 0,
+            $this->nilai_bahasa ?? 0,
+            $this->nilai_sosial_kemandirian ?? 0,
+        ];
+
+        $minScore = min($scores);
+
+        if ($minScore < 60) {
+            return 'Butuh Rujukan';
+        }
+
+        elseif ($minScore < 80) {
+            return 'Butuh Stimulasi';
+        }
+
+        return 'Sesuai Perkembangan';
+    }
 
     public function siswa()
     {
