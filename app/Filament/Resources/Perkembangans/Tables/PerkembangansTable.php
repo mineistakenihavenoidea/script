@@ -98,6 +98,11 @@ class PerkembangansTable
                         })
                         ->label('Nilai Sosial Kemandirian')
                         ->sortable(),
+                    TextColumn::make('created_at')
+                        ->label('Waktu Penilaian')
+                        ->formatStateUsing(fn ($state) => "Waktu Penilaian : " . $state->format('d M Y'))
+                        ->sortable()
+                        ->searchable(),
                     
                     //
                 ])

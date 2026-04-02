@@ -25,9 +25,27 @@ class PerkembanganForm
             ->components([
                 Grid::make(2)
                     ->schema([
+                        Select::make('kelas')
+                            ->label('Kelas')
+                            ->options(Siswa::query()->select('kelas')->distinct()->pluck('kelas', 'kelas'))
+                            ->live()
+                            ->required()
+                            ->afterStateUpdated(function ($state, Set $set){
+                                $set('nama_siswa', null);
+                                $set('foto', null);
+                                $set('kelompok_usia', null);
+                            }),
                         Select::make('nama_siswa')
                             ->label('Nama Siswa')
-                            ->options(Siswa::query()->pluck('nama_siswa', 'nama_siswa'))
+                            ->options(function (Get $get) {
+                                $kelas = $get('kelas');
+
+                                if (!$kelas) { 
+                                    return [];
+                                }
+
+                                return Siswa::where('kelas', $kelas)->pluck('nama_siswa', 'nama_siswa');
+                            })
                             ->live()
                             ->required()
                             ->searchable()
@@ -35,7 +53,6 @@ class PerkembanganForm
                                 if ($state) {
                                     $siswa = Siswa::where('nama_siswa', $state)->first();
                                     if ($siswa) {
-                                        $set('kelas', $siswa->kelas ?? null);
                                         $set('foto', $siswa->foto ?? null);
                                         
                                         if ($siswa->tanggal_lahir) {
@@ -52,13 +69,9 @@ class PerkembanganForm
                                 }
                             }),
 
-                        TextInput::make('kelas')
-                            ->label('Kelas')
-                            ->readOnly()
-                            ->required(),
+                        
                     ]),
                 
-                    
                 Grid::make(2)
                     ->schema([
                         Select::make('kelompok_usia')

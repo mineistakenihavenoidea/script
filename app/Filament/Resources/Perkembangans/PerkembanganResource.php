@@ -17,12 +17,15 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use UnitEnum;
+use Illuminate\Support\Facades\DB;
+use App\Filament\Resources\Perkembangans\Widgets\PerkembanganStatsOverview;
 
 class PerkembanganResource extends Resource
 {
     protected static ?string $model = Perkembangan::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string | UnitEnum | null $navigationGroup = 'Siswa';
 
     protected static ?string $recordTitleAttribute = 'nama_siswa';
 
@@ -64,5 +67,23 @@ class PerkembanganResource extends Resource
             ->withoutGlobalScopes([
                 SoftDeletingScope::class,
             ]);
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->whereIn('id', function ($query) {
+                $query->select(DB::raw('MAX(id)'))
+                    ->from('perkembangan')
+                    ->whereNull('deleted_at')
+                    ->groupBy('nama_siswa');
+        });
+    }
+
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            PerkembanganStatsOverview::class,
+        ];
     }
 }

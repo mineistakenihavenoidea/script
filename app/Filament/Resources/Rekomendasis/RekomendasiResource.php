@@ -17,12 +17,13 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use UnitEnum;
 
 class RekomendasiResource extends Resource
 {
     protected static ?string $model = Rekomendasi::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|UnitEnum|null $navigationGroup = 'Data Perkembangan';
 
     protected static ?string $recordTitleAttribute = 'Rekomendasi';
 

@@ -19,12 +19,13 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Infolists\Infolist;
 use Filament\Infolists\Components\TextEntry;
+use UnitEnum;
 
 class SiswaResource extends Resource
 {
     protected static ?string $model = Siswa::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string | UnitEnum | null $navigationGroup = 'Siswa';
 
     protected static ?string $recordTitleAttribute = 'nama_siswa';
 
