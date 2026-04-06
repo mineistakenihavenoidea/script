@@ -25,6 +25,8 @@ class RekomendasiResource extends Resource
 
     protected static string|UnitEnum|null $navigationGroup = 'Data Perkembangan';
 
+    protected static ?string $navigationLabel = 'Rekomendasi';
+
     protected static ?string $recordTitleAttribute = 'Rekomendasi';
 
     public static function form(Schema $schema): Schema

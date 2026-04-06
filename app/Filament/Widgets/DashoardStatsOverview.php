@@ -7,10 +7,15 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 use App\Models\Siswa;
 use App\Models\Perkembangan;
 
-class TestStatsOverview extends StatsOverviewWidget
+class DashoardStatsOverview extends StatsOverviewWidget
 {
     protected function getStats(): array
     {
+        $butuhStimulasi = Perkembangan::where('nilai_motorik_halus', '<', 80)
+            ->orWhere('nilai_motorik_kasar', '<', 80)
+            ->orWhere('nilai_bahasa', '<', 80)
+            ->orWhere('nilai_sosial_kemandirian', '<', 80)
+            ->count();
         // Menghitung berapa penilaian yang butuh rujukan (nilai di bawah 60)
         $butuhRujukan = Perkembangan::where('nilai_motorik_halus', '<', 60)
             ->orWhere('nilai_motorik_kasar', '<', 60)
@@ -28,11 +33,17 @@ class TestStatsOverview extends StatsOverviewWidget
                 ->description('Riwayat penilaian masuk')
                 ->descriptionIcon('heroicon-m-clipboard-document-check')
                 ->color('info'),
+
+            Stat::make('Siswa butuh stimulasi', $butuhStimulasi)
+                ->description("Terdapat {$butuhStimulasi} siswa membutuhkan stimulasi tambahan")
+                ->descriptionIcon('heroicon-m-exclamation-triangle')
+                ->color('warning'),
                 
             Stat::make('Peringatan Rujukan', $butuhRujukan)
-                ->description('Terdapat nilai < 60')
+                ->description("Terdapat {$butuhRujukan} siswa membutuhkan rujukan")
                 ->descriptionIcon('heroicon-m-exclamation-triangle')
                 ->color('danger'),
         ];
     }
 }
+

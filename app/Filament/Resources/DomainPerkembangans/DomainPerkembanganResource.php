@@ -25,6 +25,8 @@ class DomainPerkembanganResource extends Resource
     
     protected static string | UnitEnum | null $navigationGroup = 'Data Perkembangan';
 
+    protected static ?string $navigationLabel = 'Domain Perkembangan';
+
     protected static ?string $recordTitleAttribute = 'DomainPerkembangan';
 
     public static function form(Schema $schema): Schema

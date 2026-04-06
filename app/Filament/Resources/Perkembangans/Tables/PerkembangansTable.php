@@ -18,6 +18,11 @@ use Filament\Support\Enums\FontWeight;
 use Filament\Tables\Columns\Layout\Panel;
 use Filament\Tables\Columns\Layout\Split;
 use Filament\Tables\Columns\ImageColumn;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
+use App\Models\Siswa;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 
 class PerkembangansTable
 {
@@ -114,7 +119,19 @@ class PerkembangansTable
             ])
 
             ->filters([
-                TrashedFilter::make(),
+                SelectFilter::make('kelas')
+                    ->label('Kelas')
+                    ->options(Siswa::pluck('kelas', 'kelas'))
+                    ->searchable(),
+                Filter::make('perekaman')
+                    ->label('Data Terbaru')
+                    ->toggle()
+                    ->query(fn (Builder $query): Builder => $query->whereIn('id', function ($q) {
+                        $q->select(DB::raw('MAX(id)'))
+                            ->from('perkembangan')
+                            ->whereNull('deleted_at')
+                            ->groupBy('nama_siswa');
+                    })),
             ])
             ->recordActions([
                 ViewAction::make(),

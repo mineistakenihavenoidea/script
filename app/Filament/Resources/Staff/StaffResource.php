@@ -23,7 +23,9 @@ class StaffResource extends Resource
 {
     protected static ?string $model = Staff::class;
 
-    protected static string | UnitEnum | null $navigationGroup = 'Guru';
+    protected static string | UnitEnum | null $navigationGroup = 'Pengurus';
+
+    protected static ?string $navigationLabel = 'Pengurus';
 
     protected static ?string $recordTitleAttribute = 'nama_guru';
 

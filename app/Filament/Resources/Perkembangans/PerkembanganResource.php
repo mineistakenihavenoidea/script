@@ -20,12 +20,17 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use UnitEnum;
 use Illuminate\Support\Facades\DB;
 use App\Filament\Resources\Perkembangans\Widgets\PerkembanganStatsOverview;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
+use App\Models\Siswa;
 
 class PerkembanganResource extends Resource
 {
     protected static ?string $model = Perkembangan::class;
 
     protected static string | UnitEnum | null $navigationGroup = 'Siswa';
+
+    protected static ?string $navigationLabel = 'Perkembangan';
 
     protected static ?string $recordTitleAttribute = 'nama_siswa';
 
@@ -67,17 +72,6 @@ class PerkembanganResource extends Resource
             ->withoutGlobalScopes([
                 SoftDeletingScope::class,
             ]);
-    }
-
-    public static function getEloquentQuery(): Builder
-    {
-        return parent::getEloquentQuery()
-            ->whereIn('id', function ($query) {
-                $query->select(DB::raw('MAX(id)'))
-                    ->from('perkembangan')
-                    ->whereNull('deleted_at')
-                    ->groupBy('nama_siswa');
-        });
     }
 
     protected function getHeaderWidgets(): array
