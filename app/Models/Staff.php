@@ -2,27 +2,48 @@
 
 namespace App\Models;
 
+// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
 
-class Staff extends Model
+class Staff extends Authenticatable implements FilamentUser
 {
-    protected $table = 'staff';
+    use notifiable;
+
     use SoftDeletes;
+
+    protected $table = 'staff';
 
     protected $fillable = [
         'nama_guru',
         'jabatan',
         'wali_kelas',
-        'is_admin',
         'foto',
+        'username',
+        'password',
+    ];
+
+    protected $hidden = [
+        'password',
+        'remember_token',
     ];
 
     protected function casts(): array
     {
         return [
-            'is_admin' => 'boolean',
+            'password' => 'hashed',
         ];
+    }
+
+    public function canAccessPanel(Panel $panel): bool
+    {
+        return true;
     }
     //
     public function perkembangan()
