@@ -23,18 +23,21 @@ class StaffForm
                         TextInput::make('nama_guru')
                             ->label('Nama')
                             ->required(),
+                        TextInput::make('username')
+                            ->label('Username')
+                            ->required(),
+                        TextInput::make('password')
+                            ->label('Password')
+                            ->password()
+                            ->required(),
                         Select::make('jabatan')
                             ->options([
                                 'Kepala' => 'Kepala',
-                                'staff' => 'Staff',
+                                'Staff' => 'Staff',
                                 'Guru' => 'Guru',
                                 'Guru Pendamping' => 'Guru Pendamping',
                             ])
                             ->required(),
-                        Checkbox::make('is_admin')
-                            ->label('Admin (opsional)')
-                            ->inline()
-                            ->default(false),
                     ]),
                 
                     Grid::make(2)

@@ -68,4 +68,31 @@ class StaffResource extends Resource
                 SoftDeletingScope::class,
             ]);
     }
+
+    public static function canViewAny(): bool
+    {
+        return auth()->user()->canCrudPerkembangan()
+            || auth()->user()->canReadPerkembangan();
+    }
+
+    public static function canView($record): bool
+    {
+        return auth()->user()->canCrudPerkembangan()
+            || auth()->user()->canReadPerkembangan();
+    }
+
+    public static function canCreate(): bool
+    {
+        return auth()->user()->canCrudPerkembangan();
+    }
+
+    public static function canEdit($record): bool
+    {
+        return auth()->user()->canCrudPerkembangan();
+    }
+
+    public static function canDelete($record): bool
+    {
+        return auth()->user()->canCrudPerkembangan();
+    }
 }
