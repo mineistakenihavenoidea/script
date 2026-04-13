@@ -23,6 +23,7 @@ use App\Filament\Resources\Perkembangans\Widgets\PerkembanganStatsOverview;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use App\Models\Siswa;
+use App\Models\Staff;
 
 class PerkembanganResource extends Resource
 {
@@ -79,5 +80,33 @@ class PerkembanganResource extends Resource
         return [
             PerkembanganStatsOverview::class,
         ];
+    }
+
+    // Siapa yang bisa melihat halaman daftar Siswa?
+    public static function canViewAny(): bool
+    {
+        return auth()->staff()->canCrudPerkembangan()
+            || auth()->staff()->canReadPerkembangan();
+    }
+
+    public static function canView($record): bool
+    {
+        return auth()->staff()->canCrudPerkembangan()
+            || auth()->staff()->canReadPerkembangan();
+    }
+
+    public static function canCreate(): bool
+    {
+        return auth()->staff()->canCrudPerkembangan();
+    }
+
+    public static function canEdit($record): bool
+    {
+        return auth()->staff()->canCrudPerkembangan();
+    }
+
+    public static function canDelete($record): bool
+    {
+        return auth()->staff()->canCrudPerkembangan();
     }
 }

@@ -9,7 +9,7 @@ class PerkembanganChart extends ChartWidget
 {
     protected ?string $heading = 'Persentase Hasil Penilaian';
 
-    protected static ?int $sort = 2;
+    protected static ?int $sort = 3;
 
     protected function getData(): array
     {

@@ -3,46 +3,64 @@
 namespace App\Policies;
 
 use App\Models\Perkembangan;
-use App\Models\Staff; // Gunakan model User jika sistem login kamu memakai tabel users
+use App\Models\Staff;
+use Illuminate\Auth\Access\Response;
 
 class PerkembanganPolicy
 {
     /**
-     * Siapa yang bisa melihat halaman daftar data?
+     * Determine whether the user can view any models.
      */
     public function viewAny(Staff $user): bool
     {
-        // Contoh: Boleh diakses oleh super_admin dan guru
-        return in_array($user->role, ['Kepala', 'Guru', 'Staff']);
+        return $user->canCrudPerkembangan() || $user->canReadPerkembangan();
     }
 
+    /**
+     * Determine whether the user can view the model.
+     */
     public function view(Staff $user, Perkembangan $perkembangan): bool
     {
         return $this->viewAny($user);
     }
 
     /**
-     * Siapa yang bisa membuat data baru?
+     * Determine whether the user can create models.
      */
     public function create(Staff $user): bool
     {
-        // Contoh: Hanya super_admin
-        return $user->role === 'super_admin';
+        return $user->canCrudPerkembangan();
     }
 
     /**
-     * Siapa yang bisa mengedit data?
+     * Determine whether the user can update the model.
      */
     public function update(Staff $user, Perkembangan $perkembangan): bool
     {
-        return $user->role === 'super_admin';
+        return $user->canCrudPerkembangan();
     }
 
     /**
-     * Siapa yang bisa menghapus data?
+     * Determine whether the user can delete the model.
      */
     public function delete(Staff $user, Perkembangan $perkembangan): bool
     {
-        return $user->role === 'super_admin';
+        return $user->canCrudPerkembangan();
+    }
+
+    /**
+     * Determine whether the user can restore the model.
+     */
+    public function restore(Staff $user, Perkembangan $perkembangan): bool
+    {
+        return false;
+    }
+
+    /**
+     * Determine whether the user can permanently delete the model.
+     */
+    public function forceDelete(Staff $user, Perkembangan $perkembangan): bool
+    {
+        return false;
     }
 }
