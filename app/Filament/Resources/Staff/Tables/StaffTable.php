@@ -40,6 +40,9 @@ class StaffTable
                         ->label('Jabatan'),
                     TextColumn::make('wali_kelas')
                         ->label('Wali Kelas'),
+                    TextColumn::make('is_admin')
+                        ->label('Admin')
+                        ->formatStateUsing(fn (bool $state): string => $state ? 'Admin' : 'Not Admin'),
                     //
                 ]),            
             ])

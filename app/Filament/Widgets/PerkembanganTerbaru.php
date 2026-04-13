@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 class PerkembanganTerbaru extends TableWidget
 {
-    protected static ?int $sort = 2;
+    protected static ?int $sort = 3;
 
     protected int|string|array $columnSpan = 'full';
 
@@ -29,7 +29,7 @@ class PerkembanganTerbaru extends TableWidget
                     ->label('Kelas'),
                 TextColumn::make('created_at')
                     ->label('Waktu Penilaian')
-                    ->formatStateUsing(fn ($state) => "" . $state->format('d M Y')),
+                    ->formatStateUsing(fn ($state) => "Waktu Penilaian : " . $state->format('d M Y')),
                 TextColumn::make('status_kesimpulan')
                     ->label('Kesimpulan')
                     ->badge()

@@ -3,64 +3,46 @@
 namespace App\Policies;
 
 use App\Models\Perkembangan;
-use App\Models\Staff;
-use Illuminate\Auth\Access\Response;
+use App\Models\Staff; // Gunakan model User jika sistem login kamu memakai tabel users
 
 class PerkembanganPolicy
 {
     /**
-     * Determine whether the user can view any models.
+     * Siapa yang bisa melihat halaman daftar data?
      */
     public function viewAny(Staff $user): bool
     {
-        return $user->canCrudPerkembangan() || $user->canReadPerkembangan();
+        // Contoh: Boleh diakses oleh super_admin dan guru
+        return in_array($user->role, ['Kepala', 'Guru', 'Staff']);
     }
 
-    /**
-     * Determine whether the user can view the model.
-     */
     public function view(Staff $user, Perkembangan $perkembangan): bool
     {
         return $this->viewAny($user);
     }
 
     /**
-     * Determine whether the user can create models.
+     * Siapa yang bisa membuat data baru?
      */
     public function create(Staff $user): bool
     {
-        return $user->canCrudPerkembangan();
+        // Contoh: Hanya super_admin
+        return $user->role === 'super_admin';
     }
 
     /**
-     * Determine whether the user can update the model.
+     * Siapa yang bisa mengedit data?
      */
     public function update(Staff $user, Perkembangan $perkembangan): bool
     {
-        return $user->canCrudPerkembangan();
+        return $user->role === 'super_admin';
     }
 
     /**
-     * Determine whether the user can delete the model.
+     * Siapa yang bisa menghapus data?
      */
     public function delete(Staff $user, Perkembangan $perkembangan): bool
     {
-        return $user->canCrudPerkembangan();
-    }
-
-    /**
-     * Determine whether the user can restore the model.
-     */
-    public function restore(Staff $user, Perkembangan $perkembangan): bool
-    {
-        return false;
-    }
-
-    /**
-     * Determine whether the user can permanently delete the model.
-     */
-    public function forceDelete(Staff $user, Perkembangan $perkembangan): bool
-    {
-        return false;
+        return $user->role === 'super_admin';
     }
 }

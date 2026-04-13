@@ -2,44 +2,29 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Filament\Models\Contracts\FilamentUser;
-use Filament\Panel;
 
-class Staff extends Authenticatable implements FilamentUser
+class Staff extends Model
 {
-    use notifiable;
-
-    use SoftDeletes;
-
     protected $table = 'staff';
+    use SoftDeletes;
 
     protected $fillable = [
         'nama_guru',
         'jabatan',
         'wali_kelas',
+        'is_admin',
         'foto',
-        'username',
-        'password',
-    ];
-
-    protected $hidden = [
-        'password',
-        'remember_token',
     ];
 
     protected function casts(): array
     {
         return [
-            'password' => 'hashed',
+            'is_admin' => 'boolean',
         ];
     }
+<<<<<<< HEAD
 
     public function canAccessPanel(Panel $panel): bool
     {
@@ -129,6 +114,8 @@ class Staff extends Authenticatable implements FilamentUser
     {
         return $this->isKepala();
     }
+=======
+>>>>>>> parent of 7ba824e (trying to fix login)
     //
 
     public function perkembangan()

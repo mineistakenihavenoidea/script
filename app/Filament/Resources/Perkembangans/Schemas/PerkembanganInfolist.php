@@ -5,7 +5,6 @@ namespace App\Filament\Resources\Perkembangans\Schemas;
 use Filament\Schemas\Schema;
 use Filament\Infolists\Infolist;
 use Filament\Infolists\Components\TextEntry;
-use Filament\Infolists\Components\ImageEntry;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Grid;
 use Illuminate\Support\HtmlString;
@@ -17,138 +16,104 @@ class PerkembanganInfolist
     {
         return $schema
             ->components([
-                Grid::make(2)
+                Section::make ('Informasi Siswa')
                     ->schema([
+                        Grid::make(3)
+                        ->schema([
+                            TextEntry::make('nama_siswa')
+                                ->label('Nama Siswa')
+                                ->weight('bold'),
+                            TextEntry::make('kelas')
+                                ->label('Kelas'),
+                            TextEntry::make('foto')
+                                ->label('Foto')
+                                ->formatStateUsing(fn ($state) => new HtmlString('<img src="/storage/' . $state . '" style="max-height: 80px; max-width: 80px; object-fit: cover; border-radius: 8px;">'))
+                                ->visible(fn ($state) => filled($state)),
+                        ]),
+                    ]),
 
-                        // LEFT (this one can grow vertically)
-                        Grid::make(1)
+                Section::make('Hasil Penilaian')
+                    ->description('Berikut adalah hasil penilaian per Domain.')
+                    ->schema([
+                        Grid::make(4)
                             ->schema([
-                                Section::make ('Informasi Siswa')
-                                    ->schema([
-                                        Grid::make(3)
-                                            ->schema([
-                                                ImageEntry::make('foto')
-                                                    ->hiddenLabel()
-                                                    ->formatStateUsing(fn ($state) => new HtmlString('<img src="/storage/' . $state . '" style="max-height: 80px; max-width: 80px; object-fit: cover; border-radius: 8px;">'))
-                                                    ->visible(fn ($state) => filled($state))
-                                                    ->size(200),
+                                self::makeDomainEntry('motorik_halus', 'Motorik Halus'),
+                                self::makeDomainEntry('motorik_kasar', 'Motorik Kasar'),
+                                self::makeDomainEntry('bahasa', 'Bahasa'),
+                                self::makeDomainEntry('sosial_kemandirian', 'Sosial Kemandirian'),
+                            ]),
+                    ]),
+                        
+                Section::make('Kesimpulan dan Rekomendasi')
+                ->schema([
+                    TextEntry::make('kesimpulan_sistem')
+                    ->label('')
+                    ->columnSpanFull()
+                    ->html()
+                    ->state(function ($record) {
+                        $domains = [
+                            'motorik halus' => $record->nilai_motorik_halus,
+                            'motorik kasar' => $record->nilai_motorik_kasar,
+                            'bahasa' => $record->nilai_bahasa,
+                            'sosial kemandirian' => $record->nilai_sosial_kemandirian,
+                        ];
 
-                                            // DATA (KANAN)
-                                                Grid::make(2)
-                                                    ->schema([
-                                                        TextEntry::make('nama_siswa')->weight('bold'),
-                                                        TextEntry::make('kelas'),
-                                                        TextEntry::make('nama_guru')
-                                                            ->label('Pengisi'),
-                                                    ])
-                                                    ->columnSpan(2),
-                                            ]),
-                                    ]),
+                        $butuhStimulasi = [];
+                        $butuhRujukan = [];
 
-                                Section::make('Kesimpulan dan Rekomendasi')
-                                    ->schema([
-                                        TextEntry::make('kesimpulan_sistem')
-                                            ->label('')
-                                            ->columnSpanFull()
-                                            ->html()
-                                            ->state(function ($record) {
-                                                $domains = [
-                                                    'motorik halus' => $record->nilai_motorik_halus,
-                                                    'motorik kasar' => $record->nilai_motorik_kasar,
-                                                    'bahasa' => $record->nilai_bahasa,
-                                                    'sosial kemandirian' => $record->nilai_sosial_kemandirian,
-                                                ];
+                        foreach ($domains as $name => $score) {
+                            if ($score < 60) {
+                                $butuhRujukan[] = ucwords($name);
+                            } elseif ($score < 80) {
+                                $butuhStimulasi[] = $name;
+                            }
+                        }
 
-                                                $butuhStimulasi = [];
-                                                $butuhRujukan = [];
-
-                                                foreach ($domains as $name => $score) {
-                                                    if ($score < 60) {
-                                                        $butuhRujukan[] = ucwords($name);
-                                                    } elseif ($score < 80) {
-                                                        $butuhStimulasi[] = $name;
-                                                    }
-                                                }
-
-                                                if (count($butuhRujukan) > 0) {
-                                                    $domainGagal = implode(',', $butuhRujukan);
-                                                    return "<div style='padding: 1rem; border-radius: 0.5rem; background-color: #fee2e2; color: #991b1b; border: 1px solid #f87171;'>
-                                                        <strong>SISWA MEMBUTUHKAN RUJUKAN KHUSUS:</strong><br>
-                                                        Terdapat perkembangan yang tidak sesuai perkembangan dan memerlukan rujukan yakni pada domain: <strong>{$domainGagal}</strong>. Disarankan untuk segera melakukan konsultasi dengan profesional.
-                                                        </div>";
-                                                } elseif (count($butuhStimulasi) > 0) {
-                                                    $html = "<div style='padding: 1rem; border-radius: 0.5rem; background-color: #fef9c3; color: #9a3412; border: 1px solid #fde047;'>
-                                                        <strong>SISWA MEMBUTUHKAN STIMULASI:</strong><br>
-                                                        Terdapat perkembangan yang kurang optimal. Disarankan untuk memberikan stimulasi berikut sebagai tambahan di area tersebut <br><br>
-                                                        <ul style='margin-left: 1.5rem; list-style-type: disc;'>";
-                                                    
-                                                    foreach ($butuhStimulasi as $jenis) {
-                                                        $namaDomain = ucwords($jenis);
-                                                        $html .= "<li><strong>{$namaDomain}:</strong>";
-
-                                                        $rekomendasiDb = Rekomendasi::where('jenis_rekomendasi', $jenis)->pluck('nama_rekomendasi')->toArray();
-
-                                                        if(count($rekomendasiDb) > 0) {
-                                                            $html .= implode("; ", $rekomendasiDb) . "</li>";
-                                                        } else {
-                                                            $html .= "<em>(Belum ada data rekomendasi di database)</em></li>";
-                                                        }
-                                                    }
-
-                                                    $html .= "</ul></div>";
-                                                    return $html;
-
-                                                } else {
-                                                    return "<div style='padding: 1rem; border-radius: 0.5rem; background-color: #dcfce3; color: #166534; border: 1px solid #86efac;'>
-                                                        <strong>PERKEMBANGAN SISWA SESUAI:</strong><br>
-                                                        Siswa menunjukkan perkembangan yang sesuai dengan usianya pada semua domain. Tetap berikan stimulasi yang baik untuk mendukung perkembangan optimal.
-                                                        </div>";
-                                                }
-                                            }),
-                                    ]),
-                            ])
-                            ->columnSpan(1),
+                        if (count($butuhRujukan) > 0) {
+                            $domainGagal = implode(',', $butuhRujukan);
+                            return "<div style='padding: 1rem; border-radius: 0.5rem; background-color: #fee2e2; color: #991b1b; border: 1px solid #f87171;'>
+                                <strong>SISWA MEMBUTUHKAN RUJUKAN KHUSUS:</strong><br>
+                                Terdapat perkembangan yang tidak sesuai perkembangan dan memerlukan rujukan yakni pada domain: <strong>{$domainGagal}</strong>. Disarankan untuk segera melakukan konsultasi dengan profesional.
+                                </div>";
+                        } elseif (count($butuhStimulasi) > 0) {
+                            $html = "<div style='padding: 1rem; border-radius: 0.5rem; background-color: #fef9c3; color: #9a3412; border: 1px solid #fde047;'>
+                                <strong>SISWA MEMBUTUHKAN STIMULASI:</strong><br>
+                                Terdapat perkembangan yang kurang optimal. Disarankan untuk memberikan stimulasi berikut sebagai tambahan di area tersebut <br><br>
+                                <ul style='margin-left: 1.5rem; list-style-type: disc;'>";
                             
-                        Section::make('Hasil Penilaian')
-                            ->description('Hasil penilaian per Domain')
-                            ->schema([
-                                Grid::make(2)
-                                    ->schema([
-                                        self::makeDomainEntry('motorik_halus', 'Motorik Halus'),
-                                        self::makeDomainEntry('motorik_kasar', 'Motorik Kasar'),
-                                        self::makeDomainEntry('bahasa', 'Bahasa'),
-                                        self::makeDomainEntry('sosial_kemandirian', 'Sosial Kemandirian'),
-                                    ]),
-                            ])
-                            ->columnSpan(1),
+                            foreach ($butuhStimulasi as $jenis) {
+                                $namaDomain = ucwords($jenis);
+                                $html .= "<li><strong>{$namaDomain}:</strong>";
 
-                        // RIGHT SIDE (independent layout)
-                    ])
-                    ->columnSpanFull(),
+                                $rekomendasiDb = Rekomendasi::where('jenis_rekomendasi', $jenis)->pluck('nama_rekomendasi')->toArray();
+
+                                if(count($rekomendasiDb) > 0) {
+                                    $html .= implode("; ", $rekomendasiDb) . "</li>";
+                                } else {
+                                    $html .= "<em>(Belum ada data rekomendasi di database)</em></li>";
+                                }
+                            }
+
+                            $html .= "</ul></div>";
+                            return $html;
+
+                        } else {
+                            return "<div style='padding: 1rem; border-radius: 0.5rem; background-color: #dcfce3; color: #166534; border: 1px solid #86efac;'>
+                                <strong>PERKEMBANGAN SISWA SESUAI:</strong><br>
+                                Siswa menunjukkan perkembangan yang sesuai dengan usianya pada semua domain. Tetap berikan stimulasi yang baik untuk mendukung perkembangan optimal.
+                                </div>";
+                        }
+                    }),
+                ]),
             ]);
     }
 
-
-    protected static function makeDomainEntry(string $column, string $label): Grid
+    protected static function makeDomainEntry(string $column, string $label): TextEntry
     {
-        return Grid::make(2)
-            ->schema([
-
-                // Score text
-                TextEntry::make("nilai_{$column}")
-                    ->label($label)
-                    ->formatStateUsing(fn ($state) => round($state) . ' / 100'),
-
-                // Badge classification
-                TextEntry::make("nilai_{$column}")
-                    ->hiddenLabel() // no duplicate label
-                    ->formatStateUsing(fn ($state, $record) => ucwords($record->classifyScore($state)))
-                    ->color(fn ($state) =>
-                        $state >= 80 ? 'success' :
-                        ($state >= 60 ? 'warning' : 'danger')
-                    )
-                    ->badge(),
-            ])
-            ->columnSpanFull();
+        return TextEntry::make("nilai_{$column}")
+            ->label($label)
+            ->formatStateUsing(fn ($state, $record) => round($state) . '/100 ' . ucwords($record->classifyScore($state)))
+            ->color(fn ($state) => $state >= 80 ? 'success' : ($state >= 60 ? 'warning' : 'danger'))
+            ->badge();
     }
 }

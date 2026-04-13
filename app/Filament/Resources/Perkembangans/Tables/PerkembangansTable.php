@@ -55,11 +55,6 @@ class PerkembangansTable
                         ->label('Kelas')
                         ->sortable()
                         ->searchable(),
-                    TextColumn::make('kelompok_usia')
-                        ->label('Kelompok Usia')
-                        ->formatStateUsing(fn ($state) => "Kelompok Usia : {$state}")
-                        ->sortable()
-                        ->searchable(),
                     TextColumn::make('nilai_motorik_halus')
                         ->formatStateUsing(function ($state) {
                             if ($state >= 80) {
@@ -109,8 +104,8 @@ class PerkembangansTable
                         ->label('Nilai Sosial Kemandirian')
                         ->sortable(),
                     TextColumn::make('created_at')
-                        ->label('Waktu Perekaman')
-                        ->formatStateUsing(fn ($state) => "Waktu Perekaman : " . $state->format('d M Y'))
+                        ->label('Waktu Penilaian')
+                        ->formatStateUsing(fn ($state) => "Waktu Penilaian : " . $state->format('d M Y'))
                         ->sortable()
                         ->searchable(),
                     

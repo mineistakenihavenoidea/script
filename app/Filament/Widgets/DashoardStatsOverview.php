@@ -9,8 +9,6 @@ use App\Models\Perkembangan;
 
 class DashoardStatsOverview extends StatsOverviewWidget
 {
-    protected static ?int $sort = 1;
-
     protected function getStats(): array
     {
         $butuhStimulasi = Perkembangan::where('nilai_motorik_halus', '<', 80)
