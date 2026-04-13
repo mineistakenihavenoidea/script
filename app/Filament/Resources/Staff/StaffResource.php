@@ -71,28 +71,28 @@ class StaffResource extends Resource
 
     public static function canViewAny(): bool
     {
-        return auth()->staff()->canCrudPerkembangan()
-            || auth()->staff()->canReadPerkembangan();
+        return auth()->user()->canCrudPerkembangan()
+            || auth()->user()->canReadPerkembangan();
     }
 
     public static function canView($record): bool
     {
-        return auth()->staff()->canCrudPerkembangan()
-            || auth()->staff()->canReadPerkembangan();
+        return auth()->user()->canCrudPerkembangan()
+            || auth()->user()->canReadPerkembangan();
     }
 
     public static function canCreate(): bool
     {
-        return auth()->staff()->canCrudPerkembangan();
+        return auth()->user()->canCrudPerkembangan();
     }
 
     public static function canEdit($record): bool
     {
-        return auth()->staff()->canCrudPerkembangan();
+        return auth()->user()->canCrudPerkembangan();
     }
 
     public static function canDelete($record): bool
     {
-        return auth()->staff()->canCrudPerkembangan();
+        return auth()->user()->canCrudPerkembangan();
     }
 }
