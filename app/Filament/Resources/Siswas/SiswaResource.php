@@ -20,7 +20,6 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Infolists\Infolist;
 use Filament\Infolists\Components\TextEntry;
 use UnitEnum;
-use App\Models\Staff;
 
 class SiswaResource extends Resource
 {
@@ -70,32 +69,5 @@ class SiswaResource extends Resource
             ->withoutGlobalScopes([
                 SoftDeletingScope::class,
             ]);
-    }
-
-    public static function canViewAny(): bool
-    {
-        return auth()->user()->canCrudPerkembangan()
-            || auth()->user()->canReadPerkembangan();
-    }
-
-    public static function canView($record): bool
-    {
-        return auth()->user()->canCrudPerkembangan()
-            || auth()->user()->canReadPerkembangan();
-    }
-
-    public static function canCreate(): bool
-    {
-        return auth()->user()->canCrudPerkembangan();
-    }
-
-    public static function canEdit($record): bool
-    {
-        return auth()->user()->canCrudPerkembangan();
-    }
-
-    public static function canDelete($record): bool
-    {
-        return auth()->user()->canCrudPerkembangan();
     }
 }

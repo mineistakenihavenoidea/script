@@ -23,7 +23,6 @@ use App\Filament\Resources\Perkembangans\Widgets\PerkembanganStatsOverview;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use App\Models\Siswa;
-use App\Models\Staff;
 
 class PerkembanganResource extends Resource
 {
@@ -81,5 +80,4 @@ class PerkembanganResource extends Resource
             PerkembanganStatsOverview::class,
         ];
     }
-
 }

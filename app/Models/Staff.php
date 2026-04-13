@@ -24,8 +24,12 @@ class Staff extends Model
             'is_admin' => 'boolean',
         ];
     }
-    //
 
+    public function canAccessPanel(Panel $panel): bool
+    {
+        return true;
+    }
+    //
     public function perkembangan()
     {
         return $this->hasMany(Perkembangan::class);
