@@ -13,7 +13,7 @@ class StaffPolicy
     public function viewAny(Staff $user): bool
     {
         // Contoh: Boleh diakses oleh super_admin dan guru
-        return in_array($user->jabatan, ['Kepala  ', 'Staff']);
+        return in_array($user->jabatan, ['Kepala', 'Staff', 'Guru', 'Guru Pendamping']);
     }
 
     public function view(Staff $user, Staff $staff): bool

@@ -13,7 +13,7 @@ class DomainPerkembanganPolicy
      */
     public function viewAny(Staff $user): bool
     {
-        // Allowed roles: Kepala, Staff, Guru, Guru Pendamping can view; only Staff can create, update, or delete.
+        // Allowed jabatans: Kepala, Staff, Guru, Guru Pendamping can view; only Staff can create, update, or delete.
         return in_array($user->jabatan, ['Kepala', 'Staff', 'Guru', 'Guru Pendamping']);
     }
 
@@ -28,7 +28,7 @@ class DomainPerkembanganPolicy
     {
         // Contoh: Hanya Staff
         // Only Staff can create new data
-        return $user->role === 'Staff';
+        return $user->jabatan === 'Staff';
     }
 
     /**
@@ -36,7 +36,7 @@ class DomainPerkembanganPolicy
      */
     public function update(Staff $user, DomainPerkembangan $domainPerkembangan): bool
     {
-        return $user->role === 'Staff';
+        return $user->jabatan === 'Staff';
     }
 
     /**
@@ -44,6 +44,6 @@ class DomainPerkembanganPolicy
      */
     public function delete(Staff $user, DomainPerkembangan $domainPerkembangan): bool
     {
-        return $user->role === 'Staff';
+        return $user->jabatan === 'Staff';
     }
 }

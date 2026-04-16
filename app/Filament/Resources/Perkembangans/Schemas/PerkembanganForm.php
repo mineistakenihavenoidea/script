@@ -85,6 +85,7 @@ class PerkembanganForm
                             ]),
                             
                         Hidden::make('foto'),
+                        Hidden::make('pengisi'),
 
                         Placeholder::make('foto_preview')
                             ->label('Foto Siswa')

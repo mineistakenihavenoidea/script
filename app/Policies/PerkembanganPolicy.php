@@ -14,7 +14,7 @@ class PerkembanganPolicy
     public function viewAny(Staff $user): bool
     {
         // Contoh: Boleh diakses oleh super_admin dan guru
-        return in_array($user->jabatan, ['Kepala', 'Guru', 'Guru Pendamping']);
+        return in_array($user->jabatan, ['Kepala', 'Staff', 'Guru', 'Guru Pendamping']);
     }
 
     public function view(Staff $user, Perkembangan $perkembangan): bool

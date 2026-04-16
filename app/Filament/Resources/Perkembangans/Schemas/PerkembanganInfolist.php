@@ -31,15 +31,15 @@ class PerkembanganInfolist
                                                     ->hiddenLabel()
                                                     ->formatStateUsing(fn ($state) => new HtmlString('<img src="/storage/' . $state . '" style="max-height: 80px; max-width: 80px; object-fit: cover; border-radius: 8px;">'))
                                                     ->visible(fn ($state) => filled($state))
-                                                    ->size(200),
+                                                    ->size(175),
 
                                             // DATA (KANAN)
                                                 Grid::make(2)
                                                     ->schema([
                                                         TextEntry::make('nama_siswa')->weight('bold'),
                                                         TextEntry::make('kelas'),
-                                                        TextEntry::make('nama_guru')
-                                                            ->label('Pengisi'),
+                                                        TextEntry::make('pengisi')
+                                                            ->label('Pengisi Perkembangan'),
                                                     ])
                                                     ->columnSpan(2),
                                             ]),

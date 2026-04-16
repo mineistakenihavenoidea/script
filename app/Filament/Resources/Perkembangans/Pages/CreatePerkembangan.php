@@ -19,6 +19,8 @@ class CreatePerkembangan extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
+        $data['pengisi'] = auth()->user()->nama_guru;
+        
         $kelompokUsiaDb = $data['kelompok_usia'] ?? null;
 
         $domainsMap = [

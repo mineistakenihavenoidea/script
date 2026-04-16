@@ -60,6 +60,11 @@ class PerkembangansTable
                         ->formatStateUsing(fn ($state) => "Kelompok Usia : {$state}")
                         ->sortable()
                         ->searchable(),
+                    TextColumn::make('pengisi')
+                        ->label('Pengisi Perkembangan')
+                        ->formatStateUsing(fn ($state) => "Pengisi : {$state}")
+                        ->sortable()
+                        ->searchable(),
                     TextColumn::make('nilai_motorik_halus')
                         ->formatStateUsing(function ($state) {
                             if ($state >= 80) {

@@ -24,6 +24,7 @@ class Perkembangan extends Model
         'foto',
         'detail_indikator',
         'kelompok_usia',
+        'pengisi',
     ];
 
     protected $casts = [

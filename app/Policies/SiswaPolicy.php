@@ -28,7 +28,7 @@ class SiswaPolicy
     public function create(Staff $user): bool
     {
         // Contoh: Hanya super_admin
-        return in_array($user->jabatan, ['Guru', 'Guru Pendamping']);
+        return in_array($user->jabatan, ['Guru', 'Guru Pendamping', 'Staff']);
     }
 
     /**
@@ -36,7 +36,7 @@ class SiswaPolicy
      */
     public function update(Staff $user, Siswa $siswa): bool
     {
-        return in_array($user->jabatan, ['Guru', 'Guru Pendamping']);
+        return in_array($user->jabatan, ['Guru', 'Guru Pendamping', 'Staff']);
     }
 
     /**
@@ -44,6 +44,6 @@ class SiswaPolicy
      */
     public function delete(Staff $user, Siswa $siswa): bool
     {
-        return in_array($user->jabatan, ['Guru', 'Guru Pendamping']);
+        return in_array($user->jabatan, ['Guru', 'Guru Pendamping', 'Staff']);
     }
 }

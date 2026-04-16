@@ -6,16 +6,36 @@ use Filament\Widgets\StatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use App\Models\Siswa;
 use App\Models\Perkembangan;
+use Illuminate\Support\Facades\DB;
 
 class PerkembanganStatsOverview extends StatsOverviewWidget
 {
     protected function getStats(): array
     {
+        $latestPerkembangan = Perkembangan::whereIn('id', function ($q) {
+            $q->select(DB::raw('MAX(id)'))
+                ->from('perkembangan')
+                ->whereNull('deleted_at')
+                ->groupBy('nama_siswa');
+        });
+
+        $butuhStimulasi = (clone $latestPerkembangan)
+            ->where(function ($q) {
+                $q->whereBetween('nilai_motorik_halus', [60, 79])
+                    ->whereBetween('nilai_motorik_kasar', [60, 79])
+                    ->whereBetween('nilai_bahasa', [60, 79])
+                    ->whereBetween('nilai_sosial_kemandirian', [60, 79]);
+            })
+            ->count();
+
         // Menghitung berapa penilaian yang butuh rujukan (nilai di bawah 60)
-        $butuhRujukan = Perkembangan::where('nilai_motorik_halus', '<', 60)
-            ->orWhere('nilai_motorik_kasar', '<', 60)
-            ->orWhere('nilai_bahasa', '<', 60)
-            ->orWhere('nilai_sosial_kemandirian', '<', 60)
+        $butuhRujukan = (clone $latestPerkembangan)
+            ->where(function ($q) {
+                $q->where('nilai_motorik_halus', '<', 60)
+                    ->orWhere('nilai_motorik_kasar', '<', 60)
+                    ->orWhere('nilai_bahasa', '<', 60)
+                    ->orWhere('nilai_sosial_kemandirian', '<', 60);
+            })
             ->count();
 
         return [
@@ -28,9 +48,14 @@ class PerkembanganStatsOverview extends StatsOverviewWidget
                 ->description('Riwayat penilaian masuk')
                 ->descriptionIcon('heroicon-m-clipboard-document-check')
                 ->color('info'),
+
+            Stat::make('Siswa butuh stimulasi', $butuhStimulasi)
+                ->description("Terdapat {$butuhStimulasi} siswa membutuhkan stimulasi tambahan")
+                ->descriptionIcon('heroicon-m-exclamation-triangle')
+                ->color('warning'),
                 
             Stat::make('Peringatan Rujukan', $butuhRujukan)
-                ->description('Terdapat nilai < 60')
+                ->description("Terdapat {$butuhRujukan} siswa membutuhkan rujukan")
                 ->descriptionIcon('heroicon-m-exclamation-triangle')
                 ->color('danger'),
         ];

@@ -8,6 +8,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 
 class PerkembanganTerbaru extends TableWidget
 {
@@ -19,7 +20,12 @@ class PerkembanganTerbaru extends TableWidget
     {
         return $table
             ->query(
-                Perkembangan::query()->latest()->limit(5)
+                Perkembangan::whereIn('id', function ($q) {
+                    $q->select(DB::raw('MAX(id)'))
+                        ->from('perkembangan')
+                        ->whereNull('deleted_at')
+                        ->groupBy('nama_siswa');
+                })
             )
             ->columns([
                 TextColumn::make('nama_siswa')

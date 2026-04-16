@@ -20,6 +20,12 @@ class ListPerkembangans extends ListRecords
     {
         return [
             CreateAction::make(),
+            \Filament\Actions\Action::make('toggleLatest')
+            ->label(fn () => $this->onlyLatest ? 'Semua Data' : 'Data Terbaru')
+            ->color(fn () => $this->onlyLatest ? 'success' : 'gray')
+            ->action(function () {
+                $this->onlyLatest = ! $this->onlyLatest;
+            }),
         ];
     }
 
@@ -49,5 +55,23 @@ class ListPerkembangans extends ListRecords
         }
 
         return $tabs;
+    }
+
+    public bool $onlyLatest = false;
+
+    protected function getTableQuery(): Builder
+    {
+        $query = parent::getTableQuery();
+
+        if ($this->onlyLatest) {
+            $query->whereIn('id', function ($q) {
+                $q->select(DB::raw('MAX(id)'))
+                    ->from('perkembangan')
+                    ->whereNull('deleted_at')
+                    ->groupBy('nama_siswa');
+            });
+        }
+
+        return $query->orderByDesc('id');
     }
 }

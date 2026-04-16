@@ -33,6 +33,8 @@ class EditPerkembangan extends EditRecord
 
     protected function mutateFormDataBeforeSave(array $data): array
     {
+        $data['pengisi'] = auth()->user()->nama_guru;
+        
         $kelompokUsiaDb = $data['kelompok_usia'] ?? null;
 
         $domainsMap = [
