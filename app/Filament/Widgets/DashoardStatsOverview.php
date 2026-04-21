@@ -7,6 +7,7 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 use App\Models\Siswa;
 use App\Models\Perkembangan;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class DashoardStatsOverview extends StatsOverviewWidget
 {
@@ -14,6 +15,14 @@ class DashoardStatsOverview extends StatsOverviewWidget
 
     protected function getStats(): array
     {
+        // 1. Menentukan Tahun Ajaran Saat Ini (Juli - Juni)
+        $startYear = now()->month >= 7 ? now()->year : now()->year - 1;
+        $startDate = Carbon::create($startYear, 7, 1)->startOfDay();
+        $endDate = Carbon::create($startYear + 1, 6, 30)->endOfDay();
+        
+        // Label teks untuk ditampilkan di widget
+        $labelTahunAjaran = "T.A. {$startYear}/" . ($startYear + 1);
+
         $latestPerkembangan = Perkembangan::whereIn('id', function ($q) {
             $q->select(DB::raw('MAX(id)'))
                 ->from('perkembangan')
@@ -41,6 +50,16 @@ class DashoardStatsOverview extends StatsOverviewWidget
             ->count();
 
         return [
+            Stat::make('Total Siswa', Siswa::whereBetween('created_at', [$startDate, $endDate])->count())
+                ->description($labelTahunAjaran)
+                ->descriptionIcon('heroicon-m-user-group')
+                ->color('primary'),
+
+            Stat::make('Data Perkembangan', Perkembangan::whereBetween('created_at', [$startDate, $endDate])->count())
+                ->description($labelTahunAjaran)
+                ->descriptionIcon('heroicon-m-chart-bar')
+                ->color('success'),
+            // Tambahkan model/data lain di sini jika ada, menggunakan whereBetween yang sama
             Stat::make('Total Siswa', Siswa::count())
                 ->description('Jumlah siswa terdaftar')
                 ->descriptionIcon('heroicon-m-user-group')
