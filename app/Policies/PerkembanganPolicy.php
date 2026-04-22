@@ -27,7 +27,7 @@ class PerkembanganPolicy
      */
     public function create(Staff $user): bool
     {
-        return in_array($user->jabatan, ['Guru Pendamping', 'Guru']);
+        return in_array($user->jabatan, ['Guru Pendamping', 'Guru', 'Staff']);
     }
 
     /**
@@ -35,7 +35,7 @@ class PerkembanganPolicy
      */
     public function update(Staff $user, Perkembangan $perkembangan): bool
     {
-        return in_array($user->jabatan, ['Guru Pendamping', 'Guru']);
+        return in_array($user->jabatan, ['Guru Pendamping', 'Guru', 'Staff']);
     }
 
     /**
@@ -43,6 +43,6 @@ class PerkembanganPolicy
      */
     public function delete(Staff $user, Perkembangan $perkembangan): bool
     {
-        return in_array($user->jabatan, ['Guru Pendamping', 'Guru']);
+        return in_array($user->jabatan, ['Guru Pendamping', 'Guru', 'Staff']);
     }
 }

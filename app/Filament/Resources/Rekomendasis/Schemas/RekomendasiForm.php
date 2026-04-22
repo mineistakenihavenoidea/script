@@ -6,6 +6,7 @@ use Filament\Schemas\Schema;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Radio;
+use Filament\Forms\Components\Select;
 
 class RekomendasiForm
 {
@@ -19,9 +20,15 @@ class RekomendasiForm
                         TextInput::make('nama_rekomendasi')
                             ->label('Nama Rekomendasi')
                             ->required(),
-                        TextInput::make('jenis_rekomendasi')
+                        Select::make('jenis_rekomendasi')
                             ->label('Jenis Rekomendasi')
-                            ->required(),
+                            ->required()
+                            ->options([                                
+                                'Bahasa' => 'Bahasa',
+                                'Motorik Halus' => 'Motorik Halus',
+                                'Motorik Kasar' => 'Motorik Kasar',
+                                'Sosial Kemandirian' => 'Sosial Kemandirian',
+                            ]),
                     ])
                 //
             ]);

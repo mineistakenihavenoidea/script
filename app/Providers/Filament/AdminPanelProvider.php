@@ -21,6 +21,8 @@ use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Filament\Navigation\NavigationGroup;
 use App\Filament\Widgets\CustomAccountWidget;
+use Illuminate\Support\Facades\Blade;
+use Filament\View\PanelsRenderHook;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -39,6 +41,11 @@ class AdminPanelProvider extends PanelProvider
                 NavigationGroup::make('Pengurus')
                     ->icon('heroicon-o-user-plus'),
             ])
+            ->renderHook( PanelsRenderHook::HEAD_END, fn (): string => 
+            Blade::render(' <style> /* Target nama di User Menu dropdown */ .fi-user-menu-label 
+            { display: flex !important; flex-direction: column !important; align-items: flex-start !important; line-height: 1.2 !important; } 
+             /* Memanipulasi teks setelah tanda "|" agar jadi baris baru */ .fi-user-menu-label { white-space: pre-wrap; } </style> '), )
+
             ->colors([
                 'primary' => Color::Amber,
             ])

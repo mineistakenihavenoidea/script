@@ -8,6 +8,7 @@ use Filament\Resources\Pages\ViewRecord;
 use Filament\Support\Enums\Width;
 use Filament\Schemas\Schema;
 use App\Filament\Resources\Perkembangans\Schemas\PerkembanganInfolist;
+use Filament\Actions\Action;
 
 class ViewPerkembangan extends ViewRecord
 {
@@ -17,6 +18,15 @@ class ViewPerkembangan extends ViewRecord
     {
         return [
             EditAction::make(),
+            Action::make('customAction')
+                ->label('Click Me')
+                ->color('primary')
+                ->icon('heroicon-o-check')
+                ->action(function () {
+                    // Your logic here
+                    Notification::make()->title('Clicked!')->success()->send();
+                })
+                ->requiresConfirmation(), // Optional: confirmation modal
         ];
     }
 

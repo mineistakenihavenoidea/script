@@ -49,6 +49,27 @@ class SiswaForm
                                 ->label('Guru')
                                 ->relationship('guru', 'nama_guru')
                                 ->required(),
+                            Select::make('ta_masuk')
+                                ->label('Tahun Ajaran Masuk (Angkatan)')
+                                ->options(function () {
+                                    // Tentukan tahun awal TA yang sedang berjalan saat ini
+                                    $currentStartYear = now()->month >= 7 ? now()->year : now()->year - 1;
+                                    
+                                    $options = [];                                
+                                    // Membuat pilihan dari 3 tahun ke belakang sampai 1 tahun ke depan
+                                    // Sesuaikan rentang angkanya (-3 sampai 1) jika butuh lebih banyak pilihan
+                                    for ($i = -3; $i <= 1; $i++) {
+                                        $year = $currentStartYear + $i;
+                                        $ta = "{$year}/" . ($year + 1);
+                                        $options[$ta] = $ta; // Key dan Value sama
+                                    }
+                                    // Hasilnya akan menghasilkan array seperti:
+                                    // ['2022/2023' => '2022/2023', '2023/2024' => '2023/2024', dll]
+                                    return $options;
+                                })
+                                ->searchable()
+                                ->preload()
+                                ->required(),
                             FileUpload::make('foto')
                                 ->image()
                                 ->imagePreviewHeight('250')

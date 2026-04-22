@@ -17,6 +17,7 @@ class Siswa extends Model
         'nama_guru',
         'tanggal_lahir',
         'foto',
+        'ta_masuk',
     ];
     //
     public function perkembangan()

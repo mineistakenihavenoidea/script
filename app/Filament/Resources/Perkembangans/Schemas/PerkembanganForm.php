@@ -44,7 +44,17 @@ class PerkembanganForm
                                     return [];
                                 }
 
-                                return Siswa::where('kelas', $kelas)->pluck('nama_siswa', 'nama_siswa');
+                                $currentStartYear = now()->month >= 7 ? now()->year : now()->year - 1;
+
+                                $angkatanAktif = [];
+                                for ($i = 0; $i < 3; $i++) {
+                                    $year = $currentStartYear - $i;
+                                    $angkatanAktif[] = "{$year}/" . ($year + 1);
+                                }
+
+                                return Siswa::where('kelas', $kelas)
+                                        ->whereIn('ta_masuk', $angkatanAktif)
+                                        ->pluck('nama_siswa', 'nama_siswa');
                             })
                             ->live()
                             ->required()
@@ -53,23 +63,12 @@ class PerkembanganForm
                                 if ($state) {
                                     $siswa = Siswa::where('nama_siswa', $state)->first();
                                     if ($siswa) {
-                                        $set('foto', $siswa->foto ?? null);
-                                        
-                                        if ($siswa->tanggal_lahir) {
-                                            $umur = Carbon::parse($siswa->tanggal_lahir)->age;
-                                            if ($umur <= 4) $set('kelompok_usia', '4 Tahun');
-                                            elseif ($umur == 5) $set('kelompok_usia', '5 Tahun');
-                                            elseif ($umur >= 6) $set('kelompok_usia', '6 Tahun');
-                                        }
+                                        $set('foto', $siswa->foto ?? null);                            
                                     }
                                 } else {
-                                    $set('kelas', null);
                                     $set('foto', null);
-                                    $set('kelompok_usia', null);
                                 }
                             }),
-
-                        
                     ]),
                 
                 Grid::make(2)

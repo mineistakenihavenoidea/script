@@ -11,8 +11,10 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
+use Filament\Models\Contracts\HasAvatar;
+use Illuminate\Support\Facades\Storage;
 
-class Staff extends Authenticatable implements FilamentUser
+class Staff extends Authenticatable implements FilamentUser, HasAvatar
 {
     use notifiable;
 
@@ -56,6 +58,11 @@ class Staff extends Authenticatable implements FilamentUser
     public function getFilamentName(): string
     {
         return $this->nama_guru ?? $this->username ?? 'User';
+    }
+
+    public function getFilamentAvatarUrl(): ?string
+    {
+        return $this->foto ? asset('storage/' . $this->foto) : null;
     }
     //
     public function perkembangan()
