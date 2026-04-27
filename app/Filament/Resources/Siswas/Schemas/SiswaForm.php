@@ -13,6 +13,7 @@ use Filament\Schemas\Components\Utilities\Get;
 use Filament\Forms\Components\DatePicker;
 use App\Models\Staff;
 use App\Filament\Resources\Siswas\Schemas\FeatureFlag;
+use illuminate\Database\Eloquent\Builder;
 
 class SiswaForm
 {
@@ -47,7 +48,10 @@ class SiswaForm
                                 ->required(),
                             Select::make('nama_guru')
                                 ->label('Guru')
-                                ->relationship('guru', 'nama_guru')
+                                ->options(function () {
+                                    return Staff::withTrashed()->pluck('nama_guru', 'nama_guru');
+                                })
+                                ->searchable()
                                 ->required(),
                             Select::make('ta_masuk')
                                 ->label('Tahun Ajaran Masuk (Angkatan)')

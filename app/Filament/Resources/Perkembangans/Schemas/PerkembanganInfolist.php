@@ -10,6 +10,8 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Grid;
 use Illuminate\Support\HtmlString;
 use App\Models\Rekomendasi;
+use Filament\Schemas\Components\Actions;
+use Filament\Actions\Action;
 
 class PerkembanganInfolist
 {
@@ -106,20 +108,31 @@ class PerkembanganInfolist
                         ]),
                     ])
                     ->columnSpan(1),
-                            
-                    Section::make('Hasil Penilaian')
-                        ->description('Hasil penilaian per Domain')
-                        ->schema([
-                            Grid::make(2)
+
+                    Grid::make(1)
+                    ->schema([
+                        Section::make('Hasil Penilaian')
+                            ->description('Hasil penilaian per Domain')
                             ->schema([
-                                self::makeDomainEntry('motorik_halus', 'Motorik Halus'),
-                                self::makeDomainEntry('motorik_kasar', 'Motorik Kasar'),
-                                self::makeDomainEntry('bahasa', 'Bahasa'),
-                                self::makeDomainEntry('sosial_kemandirian', 'Sosial Kemandirian'),
-                            ]),
-                        ])
-                        ->columnSpan(1),
-                    // RIGHT SIDE (independent layout)
+                                Grid::make(2)
+                                ->schema([
+                                    self::makeDomainEntry('motorik_halus', 'Motorik Halus'),
+                                    self::makeDomainEntry('motorik_kasar', 'Motorik Kasar'),
+                                    self::makeDomainEntry('bahasa', 'Bahasa'),
+                                    self::makeDomainEntry('sosial_kemandirian', 'Sosial Kemandirian'),
+                                ]),                            
+                            ])
+                            ->columnSpan(1),
+                        Actions::make([
+                            Action::make('bukaFiturBaru')
+                                ->label('PDF')
+                                ->icon('heroicon-m-arrow-right-circle')
+                                ->button()
+                                ->color('primary')
+                                ->url('google.com')
+                        ])->fullWidth(),
+                        // RIGHT SIDE (independent layout)
+                    ])
                 ])
                 ->columnSpanFull(),
             ]);

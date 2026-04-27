@@ -58,6 +58,7 @@ class PerkembanganTerbaru extends TableWidget
                         default => 'gray',
                     }),
             ])
+            ->defaultSort('created_at', 'desc')
             ->paginated(false)
 
             ->filters([

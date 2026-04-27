@@ -22,7 +22,7 @@ class Siswa extends Model
     //
     public function perkembangan()
     {
-        return $this->hasMany(Perkembangan::class);
+        return $this->hasMany(Perkembangan::class, 'nama_siswa', 'nama_siswa');
     }
 
     public function guru()
