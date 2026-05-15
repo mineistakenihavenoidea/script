@@ -19,7 +19,7 @@ class DomainPerkembanganForm
                     'Motorik Kasar' => 'Motorik Kasar',
                     'Motorik Halus' => 'Motorik Halus',
                     'Bahasa' => 'Bahasa',
-                    'Sosial-Kemandirian' => 'Sosial-Kemandirian',
+                    'Sosial Kemandirian' => 'Sosial Kemandirian',
                     // Add more options as needed
                 ])
                 ->inline(),

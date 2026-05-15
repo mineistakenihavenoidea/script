@@ -129,10 +129,6 @@ class PerkembangansTable
             ])
 
             ->filters([
-                SelectFilter::make('kelas')
-                    ->label('Kelas')
-                    ->options(Siswa::pluck('kelas', 'kelas'))
-                    ->searchable(),
                 Filter::make('perekaman')
                     ->label('Data Terbaru')
                     ->toggle()

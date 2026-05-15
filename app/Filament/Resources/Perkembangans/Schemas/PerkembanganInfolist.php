@@ -12,6 +12,8 @@ use Illuminate\Support\HtmlString;
 use App\Models\Rekomendasi;
 use Filament\Schemas\Components\Actions;
 use Filament\Actions\Action;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Filament\Notifications\Notification;
 
 class PerkembanganInfolist
 {
@@ -124,12 +126,24 @@ class PerkembanganInfolist
                             ])
                             ->columnSpan(1),
                         Actions::make([
-                            Action::make('bukaFiturBaru')
+                            Action::make('printPdf')
                                 ->label('PDF')
-                                ->icon('heroicon-m-arrow-right-circle')
+                                ->icon('heroicon-m-printer')
+                                ->color('success')
                                 ->button()
-                                ->color('primary')
-                                ->url('google.com')
+                                ->requiresConfirmation()
+                                ->action(function ($record) {
+                                    // 1. your logic
+                                    Notification::make()
+                                        ->title('Generating PDF...')
+                                        ->success()
+                                        ->send();
+
+                                    // 2. open PDF in new tab
+                                    return redirect()->away(
+                                        route('perkembangan.print', ['id' => $record->id])
+                                    );
+                                })
                         ])->fullWidth(),
                         // RIGHT SIDE (independent layout)
                     ])

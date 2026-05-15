@@ -17,6 +17,7 @@ use App\Models\Siswa;
 use App\Models\DomainPerkembangan;
 use Carbon\Carbon;
 use illuminate\Database\Eloquent\Builder;
+use App\Models\Perkembangan;
 
 class PerkembanganForm
 {
@@ -66,8 +67,26 @@ class PerkembanganForm
                                     if ($siswa) {
                                         $set('foto', $siswa->foto ?? null);                            
                                     }
+
+                                    $perkembanganTerakhir = Perkembangan::where('nama_siswa', $state)
+                                    ->latest()
+                                    ->first();
+
+                                    if ($perkembanganTerakhir) {
+                                        
+                                        if($perkembanganTerakhir->kelompok_usia) {
+                                            $set('kelompok_usia', $perkembanganTerakhir->kelompok_usia);
+                                        }
+
+                                        if(is_array($perkembanganTerakhir->detail_indikator)) {
+                                            foreach ($perkembanganTerakhir->detail_indikator as $key => $value) {
+                                                $set($key, $value);
+                                            }
+                                        }
+                                    }
                                 } else {
                                     $set('foto', null);
+                                    $set('kelompok_usia', null);
                                 }
                             }),
                     ]),
@@ -106,14 +125,15 @@ class PerkembanganForm
 
                         $indikators = DomainPerkembangan::where('kelompok_usia', $age)
                             ->get()
-                            ->groupBy('domain');
+                            ->groupBy(function ($item) {
+                                return ucwords(strtolower(trim($item->domain)));
+                            });
 
                         $fields = [];
 
                         foreach ($indikators as $domain => $items) {
-                            $domainTitle = ucwords(str_replace('_', ' ', $domain));
                             $fields[] = Placeholder::make("Domain: {$domain}")
-                                ->label(new HtmlString("<div style='font-weight: 600; font-size: 1.1em; margin-top: 1rem;'>Domain: {$domainTitle}</div>"));
+                                ->label(new HtmlString("<div style='font-weight: 600; font-size: 1.1em; margin-top: 1rem; color: var(--primary-500);'>Domain: {$domain}</div>"));
 
                             foreach ($items as $indikator) {
                                 $fields[] = Radio::make("indikator_{$indikator->id}")
