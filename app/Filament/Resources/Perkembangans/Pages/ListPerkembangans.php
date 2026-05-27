@@ -16,6 +16,7 @@ use Filament\Actions\Action;
 use App\Exports\PerkembanganExport;
 use Maatwebsite\Excel\Facades\Excel;
 use Filament\Notifications\Notification;
+use Filament\Forms\Components\Select;
 
 class ListPerkembangans extends ListRecords
 {
@@ -26,27 +27,63 @@ class ListPerkembangans extends ListRecords
         return [
             CreateAction::make(),
             Action::make('Spreadsheet')
-                ->label('Konversi Spreadsheet')
+                ->label('Export Excel')
                 ->icon('heroicon-m-arrow-down-tray')
                 ->color('success')
-                ->requiresConfirmation()
-                ->action(function ($record) {
-                    // 1. your logic
-                    Notification::make()
-                        ->title('Generating Spreadsheet...')
-                        ->success()
-                        ->send();
+                ->modalHeading('Filter Data')
+                ->modalDescription('Filter data yang ingin di export. Biarkan kosong untuk export semua data.')
+                ->modalSubmitActionLabel('Download')
+                ->form([
+                    Select::make('kelas')
+                        ->label('Kelas')
+                        ->options(function () {
+                            return Siswa::distinct('kelas')->pluck('kelas', 'kelas')->toArray();
+                        })
+                        ->searchable()
+                        ->placeholder('Semua'),
+                    
+                    Select::make('bulan')
+                        ->label('Bulan')
+                        ->options([
+                            'Januari' => 'Januari',
+                            'Februari' => 'Februari',
+                            'Maret' => 'Maret',
+                            'April' => 'April',
+                            'Mei' => 'Mei',
+                            'Juni' => 'Juni',
+                            'Juli' => 'Juli',
+                            'Agustus' => 'Agustus',
+                            'September' => 'September',
+                            'Oktober' => 'Oktober',
+                            'November' => 'November',
+                            'Desember' => 'Desember',
+                        ])
+                        ->searchable()
+                        ->placeholder('Semua'),
 
-                    // 2. open PDF in new tab
-                    return Excel::download(new PerkembanganExport(), 'Data_Perkembangan_Siswa.xlsx'
-                    );
+                    Select::make('tahun')
+                        ->label('Tahun')
+                        ->options(function () {
+                            $years = [];
+                            $currentYear = now()->year;
+                            for ($i = 0; $i < 4; $i++) {
+                                $years[$currentYear - $i] = $currentYear - $i;
+                            }
+                            return $years;
+                        })
+                        ->searchable()
+                        ->placeholder('Semua'),
+                ])
+                ->requiresConfirmation()
+                ->action(function (array $data) {
+                    return Excel::download(new PerkembanganExport($data), 'Data_Perkembangan_Siswa.xlsx');
                 }),
             Action::make('toggleLatest')
-            ->label(fn () => $this->onlyLatest ? 'Semua Data' : 'Data Terbaru')
-            ->color(fn () => $this->onlyLatest ? 'success' : 'gray')
-            ->action(function () {
-                $this->onlyLatest = ! $this->onlyLatest;
-            }),
+                ->label(fn () => $this->onlyLatest ? 'Semua Data' : 'Data Terbaru')
+                ->color(fn () => $this->onlyLatest ? 'success' : 'gray')
+                ->action(function () {
+                    $this->onlyLatest = ! $this->onlyLatest;
+                }),
         ];
     }
 

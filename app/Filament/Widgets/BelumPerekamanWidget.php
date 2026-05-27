@@ -36,8 +36,9 @@ class BelumPerekamanWidget extends TableWidget
             ->query(
                 Siswa::query()
                     ->whereIn('ta_masuk', $angkatanAktif) // ✅ FIXED
-                    ->whereDoesntHave('perkembangan', function (Builder $query) use ($startDate, $endDate) {
-                        $query->whereBetween('created_at', [$startDate, $endDate]);
+                    ->whereDoesntHave('perkembangan', function (Builder $query) {
+                        $query->whereMonth('created_at', now()->month)
+                              ->whereYear('created_at', now()->year);
                     })
             )
             ->columns([

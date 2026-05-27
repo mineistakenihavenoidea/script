@@ -1,6 +1,8 @@
 <?php
 
+
 namespace App\Filament\Resources\Perkembangans\Schemas;
+
 
 use Filament\Schemas\Schema;
 use Filament\Infolists\Infolist;
@@ -10,10 +12,17 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Grid;
 use Illuminate\Support\HtmlString;
 use App\Models\Rekomendasi;
+use App\Models\Siswa;
+use App\Models\Staff;
+use App\Models\DomainPerkembangan;
 use Filament\Schemas\Components\Actions;
 use Filament\Actions\Action;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Filament\Notifications\Notification;
+use Filament\Forms\Components\Placeholder;
+use Filament\Support\Colors\Color;
+use Filament\Support\Facades\FilamentColor;
+
 
 class PerkembanganInfolist
 {
@@ -47,10 +56,11 @@ class PerkembanganInfolist
                             ]),
                         ]),
 
+
                         Section::make('Kesimpulan dan Rekomendasi')
                         ->schema([
                             TextEntry::make('kesimpulan_sistem')
-                            ->label('')
+                            ->hiddenLabel()
                             ->columnSpanFull()
                             ->html()
                             ->state(function ($record) {
@@ -61,8 +71,10 @@ class PerkembanganInfolist
                                     'sosial kemandirian' => $record->nilai_sosial_kemandirian,
                                 ];
 
+
                                 $butuhStimulasi = [];
                                 $butuhRujukan = [];
+
 
                                 foreach ($domains as $name => $score) {
                                     if ($score < 60) {
@@ -72,7 +84,15 @@ class PerkembanganInfolist
                                     }
                                 }
 
-                                if (count($butuhRujukan) > 0) {
+
+                                $totalTargetIndikator = \App\Models\DomainPerkembangan::where('kelompok_usia', $record->kelompok_usia)->count();
+                                
+                                $jumlahTerjawab = is_array($record->detail_indikator) ? count($record->detail_indikator) : 0;
+
+
+                                if ($jumlahTerjawab < $totalTargetIndikator) {
+                                    return 'Data belum terisi sepenuhnya';
+                                } elseif (count($butuhRujukan) > 0) {
                                     $domainGagal = implode(',', $butuhRujukan);
                                     return "<div style='padding: 1rem; border-radius: 0.5rem; background-color: #fee2e2; color: #991b1b; border: 1px solid #f87171;'>
                                         <strong>SISWA MEMBUTUHKAN RUJUKAN KHUSUS:</strong><br>
@@ -88,7 +108,9 @@ class PerkembanganInfolist
                                         $namaDomain = ucwords($jenis);
                                         $html .= "<li><strong>{$namaDomain}:</strong>";
 
+
                                         $rekomendasiDb = Rekomendasi::where('jenis_rekomendasi', $jenis)->pluck('nama_rekomendasi')->toArray();
+
 
                                         if(count($rekomendasiDb) > 0) {
                                             $html .= implode("; ", $rekomendasiDb) . "</li>";
@@ -97,8 +119,10 @@ class PerkembanganInfolist
                                         }
                                     }
 
+
                                     $html .= "</ul></div>";
                                     return $html;
+
 
                                 } else {
                                     return "<div style='padding: 1rem; border-radius: 0.5rem; background-color: #dcfce3; color: #166534; border: 1px solid #86efac;'>
@@ -111,6 +135,7 @@ class PerkembanganInfolist
                     ])
                     ->columnSpan(1),
 
+
                     Grid::make(1)
                     ->schema([
                         Section::make('Hasil Penilaian')
@@ -122,7 +147,7 @@ class PerkembanganInfolist
                                     self::makeDomainEntry('motorik_kasar', 'Motorik Kasar'),
                                     self::makeDomainEntry('bahasa', 'Bahasa'),
                                     self::makeDomainEntry('sosial_kemandirian', 'Sosial Kemandirian'),
-                                ]),                            
+                                ]),                           
                             ])
                             ->columnSpan(1),
                         Actions::make([
@@ -133,13 +158,6 @@ class PerkembanganInfolist
                                 ->button()
                                 ->requiresConfirmation()
                                 ->action(function ($record) {
-                                    // 1. your logic
-                                    Notification::make()
-                                        ->title('Generating PDF...')
-                                        ->success()
-                                        ->send();
-
-                                    // 2. open PDF in new tab
                                     return redirect()->away(
                                         route('perkembangan.print', ['id' => $record->id])
                                     );
@@ -152,23 +170,62 @@ class PerkembanganInfolist
             ]);
     }
 
+
     protected static function makeDomainEntry(string $column, string $label): Grid
     {
         return Grid::make(2)
-            ->schema([
-                // Score text
-                TextEntry::make("nilai_{$column}")
-                    ->label($label)
-                    ->formatStateUsing(fn ($state) => round($state) . ' / 100'),
-                // Badge classification
-                TextEntry::make("nilai_{$column}")
-                    ->hiddenLabel() // no duplicate label
-                    ->formatStateUsing(fn ($state, $record) => ucwords($record->classifyScore($state)))
-                    ->color(fn ($state) =>
-                        $state >= 80 ? 'success' :
-                        ($state >= 60 ? 'warning' : 'danger'))
-                    ->badge(),
-            ])
+            ->schema(function ($record) use ($column, $label) {
+                $totalTargetIndikator = \App\Models\DomainPerkembangan::where('kelompok_usia', $record->kelompok_usia)->count();
+                $jumlahTerjawab = is_array($record->detail_indikator) ? count($record->detail_indikator) : 0;
+
+
+                if ($jumlahTerjawab < $totalTargetIndikator) {
+                        return [
+                        Placeholder::make("nilai_{$column}")
+                            ->label($label)
+                            ->content('Data belum terisi sepenuhnya')
+                    ];
+                }
+
+
+                return [
+                    // Score text
+                    TextEntry::make("nilai_{$column}")
+                        ->label($label)
+                        ->formatStateUsing(fn ($state) => round($state) . ' / 100'),
+
+                    TextEntry::make("nilai_{$column}")
+                        ->hiddenLabel() // no duplicate label
+                        ->formatStateUsing(fn ($state, $record) => ucwords($record->classifyScore($state)))
+                        ->color(fn ($state) =>
+                            $state >= 80 ? 'success' :
+                            ($state >= 60 ? 'warning' : 'danger'))
+                        ->badge(),
+                    // Badge classification
+                    // TextEntry::make("nilai_{$column}")
+                    //     ->hiddenLabel() // no duplicate label
+                    //     ->html()
+                    //     ->formatStateUsing(function ($state, $record) {
+                            
+                    //         $teksStatus = ucwords($record->classifyScore($state));
+
+                    //         if ($state >= 80) {
+                    //             $bg = '#10B58A'; // success
+                    //         } elseif ($state >= 60) {
+                    //             $bg = '#F59E0B'; // warning
+                    //         } else {
+                    //             $bg = '#EF4444'; // danger
+                    //         }
+
+                    //         return new \Illuminate\Support\HtmlString("
+                    //             <span style='background-color: {$bg}; color: #ffffff; padding: 4px 10px; border-radius: 9999px; 
+                    //             font-size: 0.85em; font-weight: bold; border: 1px solid rgba(255,255,255,0.2);'>
+                    //                 {$teksStatus}
+                    //             </span>
+                    //         ");
+                    //     }),
+                ];
+            })
             ->columnSpanFull();
     }
 }

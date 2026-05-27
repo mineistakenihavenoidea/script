@@ -46,13 +46,6 @@ class SiswaForm
                                 ])
                                 ->inline()
                                 ->required(),
-                            Select::make('nama_guru')
-                                ->label('Guru')
-                                ->options(function () {
-                                    return Staff::withTrashed()->pluck('nama_guru', 'nama_guru');
-                                })
-                                ->searchable()
-                                ->required(),
                             Select::make('ta_masuk')
                                 ->label('Tahun Ajaran Masuk (Angkatan)')
                                 ->options(function () {

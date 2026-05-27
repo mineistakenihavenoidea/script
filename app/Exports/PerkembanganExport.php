@@ -13,14 +13,37 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use App\Filament\Resources\Perkembangans\Pages\ListPerkembangans;
 
 class PerkembanganExport implements FromQuery, WithMapping, WithHeadings, WithStyles, ShouldAutoSize
 {
+    protected $filters;
+
+    public function __construct(array $filters = [])
+    {
+        $this->filters = $filters;
+    }
     // Ambil query data perkembangan, jangan lupa load relasi siswa 
     // untuk ambil nomor induknya.
     public function query()
     {
-        return Perkembangan::query()->with('siswa');
+        $query = Perkembangan::query()->with('siswa');
+
+        if(!empty($this->filters['kelas']) && $this->filters['kelas'] !== '') {
+            $query->whereHas('siswa', function ($q) {
+                $q->where('kelas', $this->filters['kelas']);
+            });
+        }
+
+        if(!empty($this->filters['bulan']) && $this->filters['bulan'] !== '') {
+            $query->whereMonth('created_at', $this->filters['bulan']);
+        }
+
+        if(!empty($this->filters['tahun']) && $this->filters['tahun'] !== '') {
+            $query->whereYear('created_at', $this->filters['tahun']);
+        }
+
+        return $query;
     }
     // * Map data ke kolom spreadsheet (Sesuai request lo: Tanpa JSON)
     public function map($perkembangan): array
@@ -34,6 +57,7 @@ class PerkembanganExport implements FromQuery, WithMapping, WithHeadings, WithSt
             $perkembangan->nilai_bahasa,
             $perkembangan->nilai_sosial_kemandirian,
             $perkembangan->status_kesimpulan,
+            $perkembangan->created_at->format('d-m-Y'),
             // Add more fields as needed
         ];
     }

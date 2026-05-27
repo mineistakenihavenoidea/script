@@ -19,9 +19,6 @@ class DashoardStatsOverview extends StatsOverviewWidget
         $startYear = now()->month >= 7 ? now()->year : now()->year - 1;
         $startDate = Carbon::create($startYear, 7, 1)->startOfDay();
         $endDate = Carbon::create($startYear + 1, 6, 30)->endOfDay();
-        
-        // Label teks untuk ditampilkan di widget
-        $labelTahunAjaran = "T.A. {$startYear}/" . ($startYear + 1);
 
         $latestPerkembangan = Perkembangan::whereIn('id', function ($q) {
             $q->select(DB::raw('MAX(id)'))
@@ -38,7 +35,6 @@ class DashoardStatsOverview extends StatsOverviewWidget
                     ->whereBetween('nilai_sosial_kemandirian', [60, 79]);
             })
             ->count();
-
         // Menghitung berapa penilaian yang butuh rujukan (nilai di bawah 60)
         $butuhRujukan = (clone $latestPerkembangan)
             ->where(function ($q) {
@@ -49,14 +45,20 @@ class DashoardStatsOverview extends StatsOverviewWidget
             })
             ->count();
 
+        $currentStartYear = now()->month >= 7 ? now()->year : now()->year - 1;
+        $currentTaYearOne = "{$currentStartYear}/" . ($currentStartYear + 1);
+        $currentTaYearTwo = ($currentStartYear - 1) . "/{$currentStartYear}";
+
+        $activeTa = [$currentTaYearOne, $currentTaYearTwo];
+
         return [
-            Stat::make('Total Siswa', Siswa::whereBetween('created_at', [$startDate, $endDate])->count())
-                ->description($labelTahunAjaran)
+            Stat::make('Total Siswa', Siswa::whereIn('ta_masuk', $activeTa)->count())
+                ->description('Siswa Aktif Tahun Ini')
                 ->descriptionIcon('heroicon-m-user-group')
                 ->color('primary'),
 
             Stat::make('Data Perkembangan', Perkembangan::whereBetween('created_at', [$startDate, $endDate])->count())
-                ->description($labelTahunAjaran)
+                ->description('Total Perekaman Tahun Ini')
                 ->descriptionIcon('heroicon-m-chart-bar')
                 ->color('success'),
             // Tambahkan model/data lain di sini jika ada, menggunakan whereBetween yang sama
@@ -64,11 +66,6 @@ class DashoardStatsOverview extends StatsOverviewWidget
                 ->description('Jumlah siswa terdaftar')
                 ->descriptionIcon('heroicon-m-user-group')
                 ->color('success'),
-                
-            Stat::make('Total Perekaman', Perkembangan::count())
-                ->description('Riwayat penilaian masuk')
-                ->descriptionIcon('heroicon-m-clipboard-document-check')
-                ->color('info'),
 
             Stat::make('Siswa butuh stimulasi', $butuhStimulasi)
                 ->description("Terdapat {$butuhStimulasi} siswa membutuhkan stimulasi tambahan")

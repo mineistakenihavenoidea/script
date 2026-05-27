@@ -56,15 +56,21 @@ class Perkembangan extends Model
 
         $minScore = min($scores);
 
-        if ($minScore < 60) {
-            return 'Butuh Rujukan';
+        $totalTargetIndikator = \App\Models\DomainPerkembangan::where('kelompok_usia', $this->kelompok_usia)->count();
+
+        $jumlahTerjawab = is_array($this->detail_indikator) ? count($this->detail_indikator) : 0;
+
+        if ($jumlahTerjawab < $totalTargetIndikator) {
+            $status = 'Data belum terisi sepenuhnya';
+        } elseif ($minScore < 60) {
+            $status = 'Butuh Rujukan';
+        } elseif ($minScore < 80) {
+            $status = 'Butuh Stimulasi';
+        } else {
+            $status = 'Sesuai Perkembangan';
         }
 
-        elseif ($minScore < 80) {
-            return 'Butuh Stimulasi';
-        }
-
-        return 'Sesuai Perkembangan';
+        return $status;
     }
 
     public function siswa()
