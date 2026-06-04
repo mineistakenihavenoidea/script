@@ -29,6 +29,20 @@ class PerkembanganExport implements FromQuery, WithMapping, WithHeadings, WithSt
     {
         $query = Perkembangan::query()->with('siswa');
 
+        $cakupan = $this->filters['cakupan_ta'] ?? 'aktif';
+
+        if ($cakupan === 'aktif') {
+            $currentStartYear = now()->month >= 7 ? now()->year : now()->year - 1;
+            $currentTaYearOne = ($currentStartYear - 1) . "/{$currentStartYear}";
+            $currentTaYearTwo = "{$currentStartYear}/" . ($currentStartYear + 1);
+
+            $activeTa = [$currentTaYearOne, $currentTaYearTwo];
+
+            $query->whereHas('siswa', function ($q) use ($activeTa) {
+                $q->whereIn('ta_masuk', $activeTa);
+            });
+        }
+
         if(!empty($this->filters['kelas']) && $this->filters['kelas'] !== '') {
             $query->whereHas('siswa', function ($q) {
                 $q->where('kelas', $this->filters['kelas']);

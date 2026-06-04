@@ -66,11 +66,21 @@ class ListPerkembangans extends ListRecords
                         ->options(function () {
                             $years = [];
                             $currentYear = now()->year;
-                            for ($i = 0; $i < 4; $i++) {
+                            for ($i = 0; $i < 3; $i++) {
                                 $years[$currentYear - $i] = $currentYear - $i;
                             }
                             return $years;
                         })
+                        ->searchable()
+                        ->placeholder('Semua'),
+
+                    Select::make('cakupan_ta')
+                        ->label('Cakupan Data')
+                        ->options([
+                            'aktif' => 'Data Siswa Aktif',
+                            'semua' => 'Semua Data',
+                        ])
+                        ->default('aktif')
                         ->searchable()
                         ->placeholder('Semua'),
                 ])
@@ -78,11 +88,18 @@ class ListPerkembangans extends ListRecords
                 ->action(function (array $data) {
                     return Excel::download(new PerkembanganExport($data), 'Data_Perkembangan_Siswa.xlsx');
                 }),
-            Action::make('toggleLatest')
-                ->label(fn () => $this->onlyLatest ? 'Semua Data' : 'Data Terbaru')
-                ->color(fn () => $this->onlyLatest ? 'success' : 'gray')
+            Action::make('toggleLatestPerkembangan')
+                ->label(fn () => $this->onlyLatestPerkembangan ? 'Semua Data' : 'Data Terbaru')
+                ->color(fn () => $this->onlyLatestPerkembangan ? 'success' : 'gray')
                 ->action(function () {
-                    $this->onlyLatest = ! $this->onlyLatest;
+                    $this->onlyLatestPerkembangan = ! $this->onlyLatestPerkembangan;
+                }),
+            Action::make('toggleActiveTa')
+                ->label(fn () => $this->onlyActiveTa ? 'Siswa Aktif' : 'Semua Data')
+                ->color(fn () => $this->onlyActiveTa ? 'success' : 'gray')
+                ->icon(fn () => $this->onlyActiveTa ? 'heroicon-m-arrows-pointing-out' : 'heroicon-m-arrows-pointing-in')
+                ->action(function () {
+                    $this->onlyActiveTa = ! $this->onlyActiveTa;
                 }),
         ];
     }
@@ -115,13 +132,27 @@ class ListPerkembangans extends ListRecords
         ];
     }
 
-    public bool $onlyLatest = false;
+    public bool $onlyLatestPerkembangan = false;
+
+    public bool $onlyActiveTa = true;
 
     protected function getTableQuery(): Builder
     {
         $query = parent::getTableQuery();
 
-        if ($this->onlyLatest) {
+        if ($this->onlyActiveTa) {
+            $currentStartYear = now()->month >= 7 ? now()->year : now()->year - 1;
+            $currentTaYearOne = ($currentStartYear - 1) . "/{$currentStartYear}";
+            $currentTaYearTwo = "{$currentStartYear}/" . ($currentStartYear + 1);
+
+            $activeTa = [$currentTaYearOne, $currentTaYearTwo];
+
+            $query->whereHas('siswa', function ($q) use ($activeTa) {
+                $q->whereIn('ta_masuk', $activeTa);
+            });
+        }
+
+        if ($this->onlyLatestPerkembangan) {
             $query->whereIn('id', function ($q) {
                 $q->select(DB::raw('MAX(id)'))
                     ->from('perkembangan')

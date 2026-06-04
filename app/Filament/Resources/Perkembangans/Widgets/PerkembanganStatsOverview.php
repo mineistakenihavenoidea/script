@@ -7,11 +7,17 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 use App\Models\Siswa;
 use App\Models\Perkembangan;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class PerkembanganStatsOverview extends StatsOverviewWidget
 {
     protected function getStats(): array
     {
+                // 1. Menentukan Tahun Ajaran Saat Ini (Juli - Juni)
+        $startYear = now()->month >= 7 ? now()->year : now()->year - 1;
+        $startDate = Carbon::create($startYear, 7, 1)->startOfDay();
+        $endDate = Carbon::create($startYear + 1, 6, 30)->endOfDay();
+
         $latestPerkembangan = Perkembangan::whereIn('id', function ($q) {
             $q->select(DB::raw('MAX(id)'))
                 ->from('perkembangan')
@@ -27,7 +33,6 @@ class PerkembanganStatsOverview extends StatsOverviewWidget
                     ->whereBetween('nilai_sosial_kemandirian', [60, 79]);
             })
             ->count();
-
         // Menghitung berapa penilaian yang butuh rujukan (nilai di bawah 60)
         $butuhRujukan = (clone $latestPerkembangan)
             ->where(function ($q) {
@@ -38,16 +43,22 @@ class PerkembanganStatsOverview extends StatsOverviewWidget
             })
             ->count();
 
+        $currentStartYear = now()->month >= 7 ? now()->year : now()->year - 1;
+        $currentTaYearOne = ($currentStartYear - 1) . "/{$currentStartYear}";
+        $currentTaYearTwo = "{$currentStartYear}/" . ($currentStartYear + 1);
+
+        $activeTa = [$currentTaYearOne, $currentTaYearTwo];
+
         return [
-            Stat::make('Total Siswa', Siswa::count())
-                ->description('Jumlah siswa terdaftar')
+            Stat::make('Total Siswa', Siswa::whereIn('ta_masuk', $activeTa)->count())
+                ->description('Siswa Aktif Tahun Ini')
                 ->descriptionIcon('heroicon-m-user-group')
+                ->color('primary'),
+
+            Stat::make('Data Perkembangan', Perkembangan::whereBetween('created_at', [$startDate, $endDate])->count())
+                ->description('Total Perekaman Tahun Ini')
+                ->descriptionIcon('heroicon-m-chart-bar')
                 ->color('success'),
-                
-            Stat::make('Total Perekaman', Perkembangan::count())
-                ->description('Riwayat penilaian masuk')
-                ->descriptionIcon('heroicon-m-clipboard-document-check')
-                ->color('info'),
 
             Stat::make('Siswa butuh stimulasi', $butuhStimulasi)
                 ->description("Terdapat {$butuhStimulasi} siswa membutuhkan stimulasi tambahan")

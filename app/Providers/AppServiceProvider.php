@@ -31,7 +31,7 @@ class AppServiceProvider extends ServiceProvider
             'danger' => Color::Red,
             'gray' => Color::Zinc,
             'info' => Color::Blue,
-            'primary' => Color::Zinc,
+            'primary' => Color::Amber,
             'success' => Color::Green,
             'warning' => Color::Amber,
             // 'rujukan' => [

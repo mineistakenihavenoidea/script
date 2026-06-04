@@ -23,11 +23,15 @@ use Filament\Navigation\NavigationGroup;
 use App\Filament\Widgets\CustomAccountWidget;
 use Illuminate\Support\Facades\Blade;
 use Filament\View\PanelsRenderHook;
+use Filament\Support\Facades\FilamentColor;
 
 class AdminPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
+        FilamentColor::register([
+            'secondary' => Color::Green,
+        ]);
         return $panel
             ->default()
             ->id('admin')
@@ -48,6 +52,7 @@ class AdminPanelProvider extends PanelProvider
 
             ->colors([
                 'primary' => Color::Blue,
+                'secondary' => Color::Green,
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')

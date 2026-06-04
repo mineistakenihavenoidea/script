@@ -3,6 +3,7 @@
 namespace App\Filament\Widgets;
 
 use App\Models\Perkembangan;
+use App\Models\Siswa;
 use Filament\Actions\BulkActionGroup;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -18,14 +19,26 @@ class PerkembanganTerbaru extends TableWidget
 
     public function table(Table $table): Table
     {
+        $currentStartYear = now()->month >= 7 ? now()->year : now()->year - 1;
+        $currentTaYearOne = ($currentStartYear - 1) . "/{$currentStartYear}";
+        $currentTaYearTwo = "{$currentStartYear}/" . ($currentStartYear + 1);
+
+        $activeTa = [$currentTaYearOne, $currentTaYearTwo];
+        
         return $table
             ->query(
-                Perkembangan::whereIn('id', function ($q) {
-                    $q->select(DB::raw('MAX(id)'))
-                        ->from('perkembangan')
-                        ->whereNull('deleted_at')
-                        ->groupBy('nama_siswa');
-                })
+                Perkembangan::query()
+                    ->whereHas('siswa', function (Builder $query) use ($activeTa) {
+                        $query->whereIn('ta_masuk', $activeTa);
+                    })
+                    ->whereMonth('created_at', now()->month)
+                    ->whereYear('created_at', now()->year)
+                    ->whereIn('id', function ($q) {
+                        $q->select(DB::raw('MAX(id)'))
+                            ->from('perkembangan')
+                            ->whereNull('deleted_at')
+                            ->groupBy('nama_siswa');
+                    })
             )
             ->columns([
                 TextColumn::make('nama_siswa')

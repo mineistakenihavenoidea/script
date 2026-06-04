@@ -23,6 +23,7 @@ use Filament\Tables\Filters\SelectFilter;
 use App\Models\Siswa;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
+use Filament\Tables\Filters\TernaryFilter;
 
 class PerkembangansTable
 {
@@ -138,6 +139,25 @@ class PerkembangansTable
                             ->whereNull('deleted_at')
                             ->groupBy('nama_siswa');
                     })),
+                TernaryFilter::make('status_perkembangan')
+                    ->label('Status')
+                    ->placeholder('Semua')
+                    ->trueLabel('Butuh Rujukan') 
+                    ->falseLabel('Stimulasi') 
+                    ->queries(
+                        true: fn (Builder $query) => $query->where(function ($q) {
+                            $q->where('nilai_motorik_halus', '<', 60)
+                                ->orWhere('nilai_motorik_kasar', '<', 60)
+                                ->orWhere('nilai_bahasa', '<', 60)
+                                ->orWhere('nilai_sosial_kemandirian', '<', 60);
+                        }),
+                        false: fn (Builder $query) => $query->where(function ($q) {
+                            $q->whereBetween('nilai_motorik_halus', [60, 79])
+                                ->orWhereBetween('nilai_motorik_kasar', [60, 79])
+                                ->orWhereBetween('nilai_bahasa', [60, 79])
+                                ->orWhereBetween('nilai_sosial_kemandirian', [60, 79]);
+                        }),
+                    ),
             ])
             ->recordActions([
                 ViewAction::make(),

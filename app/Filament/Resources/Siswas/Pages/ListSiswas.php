@@ -10,6 +10,8 @@ use Filament\Schemas\Components\Tabs\Tab;
 use Illuminate\Database\Eloquent\Builder;
 use App\Models\Siswa;
 use Illuminate\Support\Facades\DB;
+use Filament\Schemas\Components\Actions;
+use Filament\Actions\Action;
     
 
 class ListSiswas extends ListRecords
@@ -20,6 +22,13 @@ class ListSiswas extends ListRecords
     {
         return [
             CreateAction::make(),
+            Action::make('toggleActiveTa')
+                ->label(fn () => $this->onlyActiveTa ? 'Siswa Aktif' : 'Semua Data')
+                ->color(fn () => $this->onlyActiveTa ? 'success' : 'gray')
+                ->icon(fn () => $this->onlyActiveTa ? 'heroicon-m-arrows-pointing-out' : 'heroicon-m-arrows-pointing-in')
+                ->action(function () {
+                    $this->onlyActiveTa = ! $this->onlyActiveTa;
+                }),
         ];
     }
     
@@ -42,5 +51,24 @@ class ListSiswas extends ListRecords
         }
 
         return $tabs;
+    }
+
+    public bool $onlyActiveTa = true;
+
+    protected function getTableQuery(): Builder
+    {
+        $query = parent::getTableQuery();
+
+        if ($this->onlyActiveTa) {
+            $currentStartYear = now()->month >= 7 ? now()->year : now()->year - 1;
+            $currentTaYearOne = ($currentStartYear - 1) . "/{$currentStartYear}";
+            $currentTaYearTwo = "{$currentStartYear}/" . ($currentStartYear + 1);
+
+            $activeTa = [$currentTaYearOne, $currentTaYearTwo];
+
+            $query->whereIn('ta_masuk', $activeTa);
+        }
+
+        return $query->orderByDesc('id');
     }
 }

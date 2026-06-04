@@ -50,7 +50,7 @@ class PerkembanganInfolist
                                     TextEntry::make('nama_siswa')->weight('bold'),
                                     TextEntry::make('kelas'),
                                     TextEntry::make('pengisi')
-                                    ->label('Pengisi Perkembangan'),
+                                    ->label('Pengisi'),
                                 ])
                                 ->columnSpan(2),
                             ]),
@@ -71,70 +71,67 @@ class PerkembanganInfolist
                                     'sosial kemandirian' => $record->nilai_sosial_kemandirian,
                                 ];
 
-
                                 $butuhStimulasi = [];
                                 $butuhRujukan = [];
-
-
-                                foreach ($domains as $name => $score) {
-                                    if ($score < 60) {
-                                        $butuhRujukan[] = ucwords($name);
-                                    } elseif ($score < 80) {
-                                        $butuhStimulasi[] = $name;
-                                    }
-                                }
-
 
                                 $totalTargetIndikator = \App\Models\DomainPerkembangan::where('kelompok_usia', $record->kelompok_usia)->count();
                                 
                                 $jumlahTerjawab = is_array($record->detail_indikator) ? count($record->detail_indikator) : 0;
 
-
-                                if ($jumlahTerjawab < $totalTargetIndikator) {
+                                foreach ($domains as $name => $score) {
+                                    if ($jumlahTerjawab < $totalTargetIndikator) {
                                     return 'Data belum terisi sepenuhnya';
-                                } elseif (count($butuhRujukan) > 0) {
-                                    $domainGagal = implode(',', $butuhRujukan);
-                                    return "<div style='padding: 1rem; border-radius: 0.5rem; background-color: #fee2e2; color: #991b1b; border: 1px solid #f87171;'>
-                                        <strong>SISWA MEMBUTUHKAN RUJUKAN KHUSUS:</strong><br>
+                                    }
+                                    if (is_null($score)) {
+                                        continue; // Lewati domain yang belum dinilai
+                                    }
+                                    if ($score < 60) {
+                                        $butuhRujukan[] = ucwords($name);
+                                    } elseif ($score < 80) {
+                                        $butuhStimulasi[] = ucwords($name);
+                                    }
+                                }
+
+                                $html = "";
+
+                                if (count($butuhRujukan) > 0) {
+                                    $domainGagal = implode(', ', $butuhRujukan);
+                                    $html .= "<div style='background-color: #fee2e2; color: #991b1b; padding: 1rem; border-radius: 0.5rem; margin-bottom: 0.75rem; border: 1px solid #f87171;'>
+                                        <strong style='font-size: 1.1em; display: block; margin-bottom: 0.25rem;'>SISWA MEMBUTUHKAN RUJUKAN KHUSUS:</strong>
                                         Terdapat perkembangan yang tidak sesuai perkembangan dan memerlukan rujukan yakni pada domain: <strong>{$domainGagal}</strong>. Disarankan untuk segera melakukan konsultasi dengan profesional.
                                         </div>";
-                                } elseif (count($butuhStimulasi) > 0) {
-                                    $html = "<div style='padding: 1rem; border-radius: 0.5rem; background-color: #fef9c3; color: #9a3412; border: 1px solid #fde047;'>
-                                        <strong>SISWA MEMBUTUHKAN STIMULASI:</strong><br>
-                                        Terdapat perkembangan yang kurang optimal. Disarankan untuk memberikan stimulasi berikut sebagai tambahan di area tersebut <br><br>
-                                        <ul style='margin-left: 1.5rem; list-style-type: disc;'>";
+                                }
+
+                                if (count($butuhStimulasi) > 0) {
+                                    $html .= "<div style='background-color: #fef9c3; color: #854d0e; padding: 1rem; border-radius: 0.5rem; margin-bottom: 0.75rem; border: 1px solid #facc15;'>
+                                        <strong style='font-size: 1.1em; display: block; margin-bottom: 0.25rem;'>SISWA MEMBUTUHKAN STIMULASI:</strong>
+                                        Terdapat perkembangan yang kurang optimal. Disarankan untuk memberikan stimulasi berikut sebagai tambahan di area tersebut>
+                                        <ul style='margin-top: 0.5rem; margin-bottom: 0; padding-left: 1.5rem;'>";
                                     
                                     foreach ($butuhStimulasi as $jenis) {
-                                        $namaDomain = ucwords($jenis);
-                                        $html .= "<li><strong>{$namaDomain}:</strong>";
-
-
                                         $rekomendasiDb = Rekomendasi::where('jenis_rekomendasi', $jenis)->pluck('nama_rekomendasi')->toArray();
 
+                                        $teksRekomendasi = count($rekomendasiDb) > 0 
+                                            ? implode("; ", $rekomendasiDb) 
+                                            : "<em>(Belum ada data rekomendasi di database)</em>";
 
-                                        if(count($rekomendasiDb) > 0) {
-                                            $html .= implode("; ", $rekomendasiDb) . "</li>";
-                                        } else {
-                                            $html .= "<em>(Belum ada data rekomendasi di database)</em></li>";
-                                        }
+                                        $html .= "<li style='margin-bottom: 0.25rem;'><strong>" . ucwords($jenis) . ":</strong> " . $teksRekomendasi . "</li>";
                                     }
-
-
                                     $html .= "</ul></div>";
-                                    return $html;
+                                }
 
-
-                                } else {
-                                    return "<div style='padding: 1rem; border-radius: 0.5rem; background-color: #dcfce3; color: #166534; border: 1px solid #86efac;'>
-                                        <strong>PERKEMBANGAN SISWA SESUAI:</strong><br>
+                                if (count($butuhRujukan) === 0 && count($butuhStimulasi) === 0) {
+                                    $html .= "<div style='background-color: #dcfce3; color: #166534; padding: 1rem; border-radius: 0.5rem; margin-bottom: 0.75rem; border: 1px solid #4ade80;'>
+                                        <strong style='font-size: 1.1em; display: block; margin-bottom: 0.25rem;'>PERKEMBANGAN SISWA SESUAI:</strong>
                                         Siswa menunjukkan perkembangan yang sesuai dengan usianya pada semua domain. Tetap berikan stimulasi yang baik untuk mendukung perkembangan optimal.
                                         </div>";
                                 }
-                            }),
-                        ]),
-                    ])
-                    ->columnSpan(1),
 
+                                return new HtmlString($html);
+                            }),
+                        ])
+                        ->columnSpan(1),
+                    ]),
 
                     Grid::make(1)
                     ->schema([
@@ -157,10 +154,10 @@ class PerkembanganInfolist
                                 ->color('success')
                                 ->button()
                                 ->requiresConfirmation()
-                                ->action(function ($record) {
-                                    return redirect()->away(
-                                        route('perkembangan.print', ['id' => $record->id])
-                                    );
+                                ->action(function ($record, $livewire) {
+                                    $url = route('perkembangan.print', ['id' => $record->id]);
+
+                                    $livewire->js("window.open('{$url}', '_blank');");
                                 })
                         ])->fullWidth(),
                         // RIGHT SIDE (independent layout)

@@ -56,9 +56,9 @@ class PerkembanganChart extends ChartWidget
                     'label' => 'Jumlah Penilaian',
                     'data' => [$sesuai, $butuhStimulasi, $butuhRujukan],
                     'backgroundColor' => [
-                        'green',
-                        'yellow',
-                        'red',
+                        'rgb(0, 190, 70)',
+                        'rgb(255, 174, 0)',
+                        'rgb(160, 0, 0)',
                     ],
                 ],
             ],

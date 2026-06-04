@@ -47,12 +47,9 @@ class PerkembanganForm
                                 }
 
                                 $currentStartYear = now()->month >= 7 ? now()->year : now()->year - 1;
-
-                                $angkatanAktif = [];
-                                for ($i = 0; $i < 3; $i++) {
-                                    $year = $currentStartYear - $i;
-                                    $angkatanAktif[] = "{$year}/" . ($year + 1);
-                                }
+                                $taSekarang = "{$currentStartYear}/" . ($currentStartYear + 1);
+                                $taSebelumnya = ($currentStartYear - 1) . "/{$currentStartYear}" ;
+                                $angkatanAktif = [$taSekarang, $taSebelumnya];
 
                                 return Siswa::where('kelas', $kelas)
                                         ->whereIn('ta_masuk', $angkatanAktif)

@@ -46,8 +46,8 @@ class DashoardStatsOverview extends StatsOverviewWidget
             ->count();
 
         $currentStartYear = now()->month >= 7 ? now()->year : now()->year - 1;
-        $currentTaYearOne = "{$currentStartYear}/" . ($currentStartYear + 1);
-        $currentTaYearTwo = ($currentStartYear - 1) . "/{$currentStartYear}";
+        $currentTaYearOne = ($currentStartYear - 1) . "/{$currentStartYear}";
+        $currentTaYearTwo = "{$currentStartYear}/" . ($currentStartYear + 1);
 
         $activeTa = [$currentTaYearOne, $currentTaYearTwo];
 
