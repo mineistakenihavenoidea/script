@@ -44,7 +44,6 @@ class ViewPerkembangan extends ViewRecord
     protected function getFooterWidgets(): array
     {
         return [
-            TrendPerkembanganChart::class,
         ];
     }
 

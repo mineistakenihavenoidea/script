@@ -22,6 +22,9 @@ use Filament\Notifications\Notification;
 use Filament\Forms\Components\Placeholder;
 use Filament\Support\Colors\Color;
 use Filament\Support\Facades\FilamentColor;
+use Filament\Schemas\Components\Livewire;
+use App\Filament\Resources\Perkembangans\Widgets\TrendPerkembanganChart;
+use App\Filament\Resources\Perkembangans\Widgets\TrendPerkembanganUsiaChart;
 
 
 class PerkembanganInfolist
@@ -161,12 +164,24 @@ class PerkembanganInfolist
                                 })
                         ])->fullWidth(),
                         // RIGHT SIDE (independent layout)
+                        Livewire::make(
+                            TrendPerkembanganUsiaChart::class,
+                            fn ($record) => [
+                                'record' => $record,
+                            ]
+                        ),
                     ])
                 ])
                 ->columnSpanFull(),
+                Livewire::make(
+                    TrendPerkembanganChart::class,
+                    fn ($record) => [
+                        'record' => $record,
+                    ]
+                )
+                ->columnSpanFull(),
             ]);
     }
-
 
     protected static function makeDomainEntry(string $column, string $label): Grid
     {
@@ -175,7 +190,6 @@ class PerkembanganInfolist
                 $totalTargetIndikator = \App\Models\DomainPerkembangan::where('kelompok_usia', $record->kelompok_usia)->count();
                 $jumlahTerjawab = is_array($record->detail_indikator) ? count($record->detail_indikator) : 0;
 
-
                 if ($jumlahTerjawab < $totalTargetIndikator) {
                         return [
                         Placeholder::make("nilai_{$column}")
@@ -183,7 +197,6 @@ class PerkembanganInfolist
                             ->content('Data belum terisi sepenuhnya')
                     ];
                 }
-
 
                 return [
                     // Score text
