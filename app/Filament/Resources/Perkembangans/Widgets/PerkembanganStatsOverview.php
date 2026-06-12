@@ -13,19 +13,28 @@ class PerkembanganStatsOverview extends StatsOverviewWidget
 {
     protected function getStats(): array
     {
-                // 1. Menentukan Tahun Ajaran Saat Ini (Juli - Juni)
+        // 1. Menentukan Tahun Ajaran Saat Ini (Juli - Juni)
         $startYear = now()->month >= 7 ? now()->year : now()->year - 1;
         $startDate = Carbon::create($startYear, 7, 1)->startOfDay();
         $endDate = Carbon::create($startYear + 1, 6, 30)->endOfDay();
+
+        $currentStartYear = now()->month >= 7 ? now()->year : now()->year - 1;
+        $currentTaYearOne = ($currentStartYear - 1) . "/{$currentStartYear}";
+        $currentTaYearTwo = "{$currentStartYear}/" . ($currentStartYear + 1);
+
+        $activeTa = [$currentTaYearOne, $currentTaYearTwo];
 
         $latestPerkembangan = Perkembangan::whereIn('id', function ($q) {
             $q->select(DB::raw('MAX(id)'))
                 ->from('perkembangan')
                 ->whereNull('deleted_at')
                 ->groupBy('nama_siswa');
+        })->whereHas('siswa', function ($q) use ($activeTa) {
+            $q->whereIn('ta_masuk', $activeTa);
         });
 
         $butuhStimulasi = (clone $latestPerkembangan)
+            ->whereBetween('created_at', [$startDate, $endDate])
             ->where(function ($q) {
                 $q->whereBetween('nilai_motorik_halus', [60, 79])
                     ->whereBetween('nilai_motorik_kasar', [60, 79])
@@ -35,6 +44,7 @@ class PerkembanganStatsOverview extends StatsOverviewWidget
             ->count();
         // Menghitung berapa penilaian yang butuh rujukan (nilai di bawah 60)
         $butuhRujukan = (clone $latestPerkembangan)
+            ->whereBetween('created_at', [$startDate, $endDate])
             ->where(function ($q) {
                 $q->where('nilai_motorik_halus', '<', 60)
                     ->orWhere('nilai_motorik_kasar', '<', 60)
@@ -42,12 +52,6 @@ class PerkembanganStatsOverview extends StatsOverviewWidget
                     ->orWhere('nilai_sosial_kemandirian', '<', 60);
             })
             ->count();
-
-        $currentStartYear = now()->month >= 7 ? now()->year : now()->year - 1;
-        $currentTaYearOne = ($currentStartYear - 1) . "/{$currentStartYear}";
-        $currentTaYearTwo = "{$currentStartYear}/" . ($currentStartYear + 1);
-
-        $activeTa = [$currentTaYearOne, $currentTaYearTwo];
 
         return [
             Stat::make('Total Siswa', Siswa::whereIn('ta_masuk', $activeTa)->count())

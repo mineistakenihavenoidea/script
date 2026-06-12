@@ -109,13 +109,13 @@
 
     @php
         $domains = [
-            'motorik_halus' => 'Motorik Halus',
-            'motorik_kasar' => 'Motorik Kasar',
-            'bahasa' => 'Bahasa',
-            'sosial_kemandirian' => 'Sosial Kemandirian',
+            'Motorik Halus'         => $record->nilai_motorik_halus,
+            'Motorik Kasar'         => $record->nilai_motorik_kasar,
+            'Bahasa'                => $record->nilai_bahasa,
+            'Sosial Kemandirian'    => $record->nilai_sosial_kemandirian,
         ];
 
-        $butuhRujukan = [];
+        $butuhRujukan   = [];
         $butuhStimulasi = [];
 
         foreach ($domains as $name => $score) {

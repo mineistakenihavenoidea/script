@@ -10,6 +10,7 @@ use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Utilities\Get;
+use Illuminate\Support\Facades\Hash;
 
 class StaffForm
 {
@@ -29,7 +30,9 @@ class StaffForm
                         TextInput::make('password')
                             ->label('Password')
                             ->password()
-                            ->required(),
+                            ->revealable()
+                            ->saved(fn (?string $state): bool => filled($state))
+                            ->required(fn (string $operation): bool => $operation === 'create'),
                         Select::make('jabatan')
                             ->options([
                                 'Kepala' => 'Kepala',
@@ -54,7 +57,7 @@ class StaffForm
                                     '-' => '-',
                                 ])
                                 ->inline()
-                                ->required(),
+                                ->required(fn (string $operation): bool => $operation === 'create'),
                             
                             FileUpload::make('foto')
                                 ->image()

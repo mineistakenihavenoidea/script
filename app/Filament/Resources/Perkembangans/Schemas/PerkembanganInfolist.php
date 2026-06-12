@@ -187,16 +187,6 @@ class PerkembanganInfolist
     {
         return Grid::make(2)
             ->schema(function ($record) use ($column, $label) {
-                $totalTargetIndikator = \App\Models\DomainPerkembangan::where('kelompok_usia', $record->kelompok_usia)->count();
-                $jumlahTerjawab = is_array($record->detail_indikator) ? count($record->detail_indikator) : 0;
-
-                if ($jumlahTerjawab < $totalTargetIndikator) {
-                        return [
-                        Placeholder::make("nilai_{$column}")
-                            ->label($label)
-                            ->content('Data belum terisi sepenuhnya')
-                    ];
-                }
 
                 return [
                     // Score text

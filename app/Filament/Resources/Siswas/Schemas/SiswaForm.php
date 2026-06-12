@@ -26,14 +26,14 @@ class SiswaForm
                     ->schema([
                             TextInput::make('nama_siswa')
                                 ->label('Nama')
-                                ->required(),
+                                ->required(fn (string $operation): bool => $operation === 'create'),
                             TextInput::make('no_induk')
                                 ->label('Nomor Induk')
-                                ->required(),
+                                ->required(fn (string $operation): bool => $operation === 'create'),
                             DatePicker::make('tanggal_lahir')
                                 ->label('Tanggal Lahir')
                                 ->displayFormat('d F Y')
-                                ->required(),
+                                ->required(fn (string $operation): bool => $operation === 'create'),
                             Radio::make('kelas')
                                 ->label('Kelas')
                                 ->options([
@@ -45,7 +45,7 @@ class SiswaForm
                                     'B2' => 'B2',
                                 ])
                                 ->inline()
-                                ->required(),
+                                ->required(fn (string $operation): bool => $operation === 'create'),
                             Select::make('ta_masuk')
                                 ->label('Tahun Ajaran Masuk (Angkatan)')
                                 ->options(function () {
@@ -66,7 +66,7 @@ class SiswaForm
                                 })
                                 ->searchable()
                                 ->preload()
-                                ->required(),
+                                ->required(fn (string $operation): bool => $operation === 'create'),
                             FileUpload::make('foto')
                                 ->image()
                                 ->imagePreviewHeight('250')

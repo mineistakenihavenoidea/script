@@ -34,12 +34,15 @@ class SiswasTable
                         ->weight(FontWeight::Bold)
                         ->label('Nama Siswa')
                         ->searchable()
+                        ->sortable()
                         ->formatStateUsing(fn ($state) => "Nama : {$state}"),
                     TextColumn::make('no_induk')
                         ->label('Nomor Induk')
+                        ->searchable()
                         ->formatStateUsing(fn ($state) => "No. Induk : {$state}"),
                     TextColumn::make('kelas')
                         ->label('Kelas')
+                        ->searchable()
                         ->sortable()
                         ->formatStateUsing(fn ($state) => "Kelas : {$state}"),
                     TextColumn::make('tanggal_lahir')
@@ -48,6 +51,7 @@ class SiswasTable
                         ->formatStateUsing(fn ($state) => "Tanggal Lahir : {$state}"),
                     TextColumn::make('ta_masuk')
                         ->label('Tahun Masuk')
+                        ->searchable()
                         ->sortable()
                         ->formatStateUsing(fn ($state) => "Tahun Masuk : {$state}"),
                     //
