@@ -5,7 +5,6 @@
   <x-filament::section>      
       {{-- KONTINER UTAMA: Pakai inline CSS agar w-full dan justify-between mutlak jalan --}}
       <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
-          
           {{-- SISI KIRI: Avatar + Text --}}
           <div style="display: flex; align-items: center; gap: 1rem;">              
               {{-- Avatar --}}
@@ -21,7 +20,6 @@
                       </div>
                   @endif
               </div>
-              
               {{-- Info Teks --}}
               <div style="display: flex; flex-direction: column;">
                   <h2 class="text-lg font-bold tracking-tight text-gray-950 dark:text-white" style="margin: 0;">
@@ -32,7 +30,6 @@
                   </p>
               </div>              
           </div>
-
           {{-- SISI KANAN: Logout --}}
           <div>
               <form action="{{ filament()->getLogoutUrl() }}" method="post">

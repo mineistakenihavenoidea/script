@@ -9,6 +9,16 @@ use Filament\Forms\Components\Checkbox;
 
 class Login extends BaseLogin
 {
+        public function getHeading(): string
+    {
+        return 'Login';
+    }
+
+    public function getSubheading(): ?string
+    {
+        return null;
+    }
+    
     protected function getCredentialsFromFormData(array $data): array
     {
         return [

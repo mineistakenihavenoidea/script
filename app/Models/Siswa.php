@@ -11,6 +11,7 @@ class Siswa extends Model
     use SoftDeletes;
 
     protected $fillable = [
+        'id_siswa',
         'nama_siswa',
         'no_induk',
         'kelas',
