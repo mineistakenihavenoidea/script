@@ -56,7 +56,12 @@ class Perkembangan extends Model
 
         $minScore = min($scores);
 
-        $totalTargetIndikator = \App\Models\DomainPerkembangan::where('kelompok_usia', $this->kelompok_usia)->count();
+        $totalTargetIndikator = \App\Models\DomainPerkembangan::where('kelompok_usia', $this->kelompok_usia)
+            ->where(function ($query) { 
+                $query->whereNull('created_at')
+                ->orWhere('created_at', '<=', $this->created_at);
+            })
+            ->count();
 
         $jumlahTerjawab = is_array($this->detail_indikator) ? count($this->detail_indikator) : 0;
 

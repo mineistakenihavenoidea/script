@@ -71,6 +71,11 @@ class TrendPerkembanganUsiaChart extends ChartWidget
         ];
     }
 
+    protected function getMaxHeight(): ?string
+    {
+        return '300px';
+    }
+
     protected function getOptions(): array
     {
         return [

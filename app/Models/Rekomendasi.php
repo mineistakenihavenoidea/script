@@ -13,6 +13,7 @@ class Rekomendasi extends Model
     protected $fillable = [
         'nama_rekomendasi',
         'jenis_rekomendasi',
+        'kelompok_usia',
     ];
     //
 }

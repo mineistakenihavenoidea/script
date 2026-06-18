@@ -56,6 +56,26 @@ class TrendPerkembanganChart extends ChartWidget
         ];
     }
 
+    protected function getMaxHeight(): ?string
+    {
+        return '300px';
+    }
+
+    protected function getOptions(): array
+    {
+        return [
+            'scales' => [
+                'y' => [
+                    'min' => 0,
+                    'max' => 100,
+                    'ticks' => [
+                        'stepSize' => 10,
+                    ],
+                ],
+            ],
+        ];
+    }
+
     protected function getType(): string
     {
         return 'line';

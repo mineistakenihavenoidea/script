@@ -5,7 +5,7 @@ namespace App\Filament\Resources\Rekomendasis\Schemas;
 use Filament\Schemas\Schema;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Grid;
-use Filament\Schemas\Components\Radio;
+use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Select;
 
 class RekomendasiForm
@@ -20,7 +20,16 @@ class RekomendasiForm
                         TextInput::make('nama_rekomendasi')
                             ->label('Nama Rekomendasi')
                             ->required(),
-                        Select::make('jenis_rekomendasi')
+                        Radio::make('kelompok_usia')
+                            ->label('Kelompok Usia')
+                            ->required()
+                            ->options([
+                                '4 Tahun' => '4 Tahun',
+                                '5 Tahun' => '5 Tahun',
+                                '6 Tahun' => '6 Tahun',
+                            ])
+                            ->inline(),
+                        Radio::make('jenis_rekomendasi')
                             ->label('Jenis Rekomendasi')
                             ->required()
                             ->options([                                

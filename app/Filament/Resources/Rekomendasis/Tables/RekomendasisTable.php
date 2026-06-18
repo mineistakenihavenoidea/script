@@ -21,10 +21,16 @@ class RekomendasisTable
             ->columns([
                 TextColumn::make('nama_rekomendasi')
                     ->label('Nama Rekomendasi')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('jenis_rekomendasi')
                     ->label('Jenis Rekomendasi')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('kelompok_usia')
+                    ->label('Kelompok Usia')
+                    ->searchable()
+                    ->sortable(),
                 //
             ])
             ->filters([
@@ -36,9 +42,9 @@ class RekomendasisTable
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                    ForceDeleteBulkAction::make(),
-                    RestoreBulkAction::make(),
+                DeleteBulkAction::make(),
+                ForceDeleteBulkAction::make(),
+                RestoreBulkAction::make(),
                 ]),
             ]);
     }
