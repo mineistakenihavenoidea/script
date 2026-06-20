@@ -29,6 +29,31 @@
         .footer { margin-top: 30px; }
         .signature { float: right; width: 200px; text-align: center; }
         .kesimpulan { border: 1px solid #444; padding: 10px; margin-top: 10px; background: #f9f9f9; }
+        .domain-section { margin-bottom: 15px; page-break-inside: avoid; }
+        .domain-title { background: #f3f4f6; border: 1px solid #d1d5db; padding: 8px; margin: 0; font-weight: bold; }
+        .score-table { width: 100%; border-collapse: collapse; }
+        .score-table th, .score-table td { border: 1px solid #d1d5db; padding: 6px; }
+        .score-table th { background: #f9fafb; }
+        .info-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.info-table td {
+    padding: 6px 10px;
+    vertical-align: top;
+}
+
+.info-label {
+    width: 18%;
+    font-weight: bold;
+    color: #374151;
+}
+
+.info-value {
+    width: 32%;
+}
     </style>
 </head>
 
@@ -39,46 +64,71 @@
     </div>
 
     <table class="info-table">
-        <tr>
-            <td class="info-label">Nama Siswa</td>
-            <td>: <strong>{{ $record->nama_siswa }}</strong></td>
-            <td class="info-label">Tanggal</td>
-            <td>: {{ \Carbon\Carbon::parse($record->created_at)->translatedFormat('d F Y') }}</td>
-        </tr>
-        <tr>
-            <td class="info-label">Kelas / Kelompok</td>
-            <td>: {{ $record->kelas ?? '-' }}</td>
-            <td class="info-label">Kelompok Usia</td>
-            <td>: {{ $record->kelompok_usia }}</td>
-        </tr>
-    </table>
-
-    <table class="score-table">
-        <thead>
-            <tr>
-                <th>Indikator Perkembangan</th>
-                <th width="15%">Status</th>
-            </tr>
-        </thead>
         <tbody>
-            @foreach($indikatorDefinisinya as $domain => $items)
-                <tr class="domain-row">
-                    <td colspan="2">{{ strtoupper(str_replace('_', ' ', $domain)) }}</td>
-                </tr>
-                @foreach($items as $indikator)
-                    @php 
-                        $val = $record->detail_indikator["indikator_{$indikator->id}"] ?? '-';
-                    @endphp
-                    <tr>
-                        <td>{{ $indikator->indikator }}</td>
-                        <td style="text-align: center; color: {{ $val == 'yes' ? 'green' : 'red' }}">
-                            {{ $val == 'yes' ? 'Ya' : ($val == 'no' ? 'Tidak' : '-') }}
-                        </td>
-                    </tr>
-                @endforeach
-            @endforeach
+            <tr>
+                <td class="info-label">Nama Siswa</td>
+                <td class="info-value">: {{ $record->nama_siswa }}</td>
+
+                <td class="info-label">Tanggal Pemeriksaan</td>
+                <td class="info-value">: 
+                    {{ \Carbon\Carbon::parse($record->created_at)->translatedFormat('d F Y') }}
+                </td>
+            </tr>
+
+            <tr>
+                <td class="info-label">Kelas / Kelompok</td>
+                <td class="info-value">: {{ $record->kelas ?: '-' }}</td>
+
+                <td class="info-label">Kelompok Usia</td>
+                <td class="info-value">: {{ $record->kelompok_usia }}</td>
+            </tr>
         </tbody>
     </table>
+
+    @foreach($indikatorDefinisinya as $domain => $items)
+
+    <div class="domain-section">
+
+        <h4 class="domain-title">
+            {{ strtoupper(str_replace('_', ' ', $domain)) }}
+        </h4>
+
+        <table class="score-table">
+            <thead>
+                <tr>
+                    <th>Indikator Perkembangan</th>
+                    <th width="15%">Status</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach($items as $indikator)
+
+                    @php
+                        $val = $record->detail_indikator["indikator_{$indikator->id}"] ?? '-';
+                    @endphp
+
+                    <tr>
+                        <td>{{ $indikator->indikator }}</td>
+
+                        <td style="text-align:center;">
+                            @if($val === 'yes')
+                                <span style="color:green;">Ya</span>
+                            @elseif($val === 'no')
+                                <span style="color:red;">Tidak</span>
+                            @else
+                                -
+                            @endif
+                        </td>
+                    </tr>
+
+                @endforeach
+            </tbody>
+        </table>
+
+    </div>
+
+@endforeach
 
     <table class="score-table">
         <thead>
@@ -107,57 +157,112 @@
         </tbody>
     </table>
 
-    @php
-        $domains = [
-            'Motorik Halus'         => $record->nilai_motorik_halus,
-            'Motorik Kasar'         => $record->nilai_motorik_kasar,
-            'Bahasa'                => $record->nilai_bahasa,
-            'Sosial Kemandirian'    => $record->nilai_sosial_kemandirian,
-        ];
+@php
+    $domains = [
+        'Motorik Halus' => $record->nilai_motorik_halus,
+        'Motorik Kasar' => $record->nilai_motorik_kasar,
+        'Bahasa' => $record->nilai_bahasa,
+        'Sosial Kemandirian' => $record->nilai_sosial_kemandirian,
+    ];
 
-        $butuhRujukan   = [];
-        $butuhStimulasi = [];
+    $butuhStimulasi = [];
+    $butuhRujukan = [];
+    $sesuai = [];
 
+    $totalTargetIndikator = \App\Models\DomainPerkembangan::where(
+        'kelompok_usia',
+        $record->kelompok_usia
+    )->count();
+
+    $jumlahTerjawab = is_array($record->detail_indikator)
+        ? count($record->detail_indikator)
+        : 0;
+
+    $dataLengkap = $jumlahTerjawab >= $totalTargetIndikator;
+
+    if ($dataLengkap) {
         foreach ($domains as $name => $score) {
-            if (is_null($score)) continue;
+            if (is_null($score)) {
+                continue;
+            }
+
             if ($score < 60) {
                 $butuhRujukan[] = $name;
             } elseif ($score < 80) {
                 $butuhStimulasi[] = $name;
+            } else {
+                $sesuai[] = $name;
             }
         }
-    @endphp
+    }
+@endphp
+
+@if (!$dataLengkap)
+
+    <div class="alert alert-gray">
+        Data belum terisi sepenuhnya.
+    </div>
+
+@else
 
     @if(count($butuhRujukan) > 0)
         <div class="alert alert-red">
-            <span class="alert-title">SISWA MEMBUTUHKAN RUJUKAN KHUSUS:</span>
-            Terdapat perkembangan yang tidak sesuai pada domain: <strong>{{ implode(', ', $butuhRujukan) }}</strong>. Disarankan untuk segera melakukan konsultasi dengan profesional atau psikolog anak.
+            <span class="alert-title">
+                DOMAIN YANG MEMBUTUHKAN RUJUKAN KHUSUS
+            </span>
+
+            <br>
+
+            Domain:
+            <strong>{{ implode(', ', $butuhRujukan) }}</strong>
+
+            <br>
+
+            Disarankan untuk segera melakukan konsultasi dengan profesional.
         </div>
     @endif
 
     @if(count($butuhStimulasi) > 0)
         <div class="alert alert-yellow">
-            <span class="alert-title">SISWA MEMBUTUHKAN STIMULASI:</span>
-            Terdapat perkembangan yang kurang optimal. Disarankan untuk memberikan stimulasi tambahan sebagai berikut:
-            <ul style="margin: 5px 0 0; padding-left: 20px;">
+            <span class="alert-title">
+                DOMAIN YANG MEMBUTUHKAN STIMULASI
+            </span>
+
+            <ul>
                 @foreach($butuhStimulasi as $jenis)
                     @php
-                        // Opsional: Tarik data rekomendasi dari DB kalau ada
-                        $rekom = \App\Models\Rekomendasi::where('jenis_rekomendasi', strtolower($jenis))->pluck('nama_rekomendasi')->toArray();
-                        $teks = count($rekom) > 0 ? implode('; ', $rekom) : '(Dibutuhkan stimulasi intensif oleh guru/orang tua)';
+                        $rekom = \App\Models\Rekomendasi::where(
+                            'jenis_rekomendasi',
+                            strtolower($jenis)
+                        )->pluck('nama_rekomendasi')->toArray();
+
+                        $teks = count($rekom)
+                            ? implode('; ', $rekom)
+                            : '(Belum ada data rekomendasi)';
                     @endphp
-                    <li><strong>{{ $jenis }}:</strong> {{ $teks }}</li>
+
+                    <li>
+                        <strong>{{ $jenis }}</strong>
+                        : {{ $teks }}
+                    </li>
                 @endforeach
             </ul>
         </div>
     @endif
 
-    @if(count($butuhRujukan) === 0 && count($butuhStimulasi) === 0)
+    @if(count($sesuai) > 0)
         <div class="alert alert-green">
-            <span class="alert-title">PERKEMBANGAN SISWA SESUAI:</span>
-            Siswa menunjukkan perkembangan yang sesuai dengan usianya pada semua domain. Tetap berikan stimulasi yang baik untuk mendukung perkembangan yang optimal.
+            <span class="alert-title">
+                DOMAIN YANG SESUAI PERKEMBANGAN
+            </span>
+
+            <br>
+
+            <strong>{{ implode(', ', $sesuai) }}</strong>
         </div>
     @endif
+
+@endif
 
     <div class="ttd-container">
         <div class="ttd-box">

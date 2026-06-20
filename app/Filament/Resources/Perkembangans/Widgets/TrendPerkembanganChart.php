@@ -9,6 +9,8 @@ use Carbon\Carbon;
 
 class TrendPerkembanganChart extends ChartWidget
 {
+    protected ?string $pollingInterval = null;
+    
     protected ?string $heading = 'Perkembangan Siswa';
 
     public ?Model $record = null;

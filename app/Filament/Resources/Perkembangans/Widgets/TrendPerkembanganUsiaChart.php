@@ -9,7 +9,9 @@ use Carbon\Carbon;
 
 class TrendPerkembanganUsiaChart extends ChartWidget
 {
-    protected ?string $heading = 'Perkembangan Per Kelompok Usia';
+    protected ?string $pollingInterval = null;
+
+    protected ?string $heading = 'Perkembangan Anak Dalam Kelompok Usia';
 
     public ?Model $record = null;
 

@@ -59,7 +59,6 @@ class PerkembanganInfolist
                             ]),
                         ]),
 
-
                         Section::make('Kesimpulan dan Rekomendasi')
                         ->schema([
                             TextEntry::make('kesimpulan_sistem')
@@ -76,9 +75,14 @@ class PerkembanganInfolist
 
                                 $butuhStimulasi = [];
                                 $butuhRujukan = [];
+                                $sesuai = [];
 
-                                $totalTargetIndikator = \App\Models\DomainPerkembangan::where('kelompok_usia', $record->kelompok_usia)->count();
-                                
+                                $totalTargetIndikator = \App\Models\DomainPerkembangan::where('kelompok_usia', $record->kelompok_usia)
+                                    ->where(function ($query) use ($record) { 
+                                        $query->whereNull('created_at')
+                                        ->orWhere('created_at', '<=', $record->created_at);
+                                    })
+                                    ->count();
                                 $jumlahTerjawab = is_array($record->detail_indikator) ? count($record->detail_indikator) : 0;
 
                                 foreach ($domains as $name => $score) {
@@ -92,28 +96,60 @@ class PerkembanganInfolist
                                         $butuhRujukan[] = ucwords($name);
                                     } elseif ($score < 80) {
                                         $butuhStimulasi[] = ucwords($name);
+                                    } else {
+                                        $sesuai[] = ucwords($name);
                                     }
+                                }
+
+                                if (count($butuhRujukan) > 0) {
+                                    $teksUtama = "SISWA MEMBUTUHKAN RUJUKAN KHUSUS";
+                                    $bgUtama = '#fee2e2';
+                                    $borderUtama = '#f87171';
+                                    $warnaTeksUtama = '#991b1b';
+                                } elseif (count($butuhStimulasi) > 0) {
+                                    $teksUtama = "SISWA MEMBUTUHKAN STIMULASI";
+                                    $bgUtama = '#fef9c3';
+                                    $borderUtama = '#facc15';
+                                    $warnaTeksUtama = '#854d0e';
+                                } else {
+                                    $teksUtama = "PERKEMBANGAN SISWA SESUAI";
+                                    $bgUtama = '#dcfce3';
+                                    $borderUtama = '#4ade80';
+                                    $warnaTeksUtama = '#166534';
                                 }
 
                                 $html = "";
 
+                                // KOTAK KESIMPULAN UTAMA (BOX BESAR)
+                                $html .= "<div>";
+                                $html .= "<p class='mb-4 text-base text-gray-800 dark:text-gray-200'> <strong>Kesimpulan Sistem:</strong></p>"; 
+                                $html .= "<u>{$teksUtama}</u>";
+                                $html .= "</div>";
+
+                                // 2. BAGIAN DETAIL (DINAMIS & BERWARNA)
+                                $html .= "<br>";
+                                $html .= "<div style='padding-left: 0.25rem;'>";
+                                $html .= "<p class='mb-4 text-base text-gray-800 dark:text-gray-200'> <strong>Berikut adalah detail dari perkembangan anak:</strong></p>"; 
+                                $html .= "<br>";
+
+
+                                // Jika butuh rujukan, tampilkan detail merah
                                 if (count($butuhRujukan) > 0) {
                                     $domainGagal = implode(', ', $butuhRujukan);
-                                    $html .= "<div style='background-color: #fee2e2; color: #991b1b; padding: 1rem; border-radius: 0.5rem; margin-bottom: 0.75rem; border: 1px solid #f87171;'>
-                                        <strong style='font-size: 1.1em; display: block; margin-bottom: 0.25rem;'>SISWA MEMBUTUHKAN RUJUKAN KHUSUS:</strong>
-                                        Terdapat perkembangan yang tidak sesuai perkembangan dan memerlukan rujukan yakni pada domain: <strong>{$domainGagal}</strong>. Disarankan untuk segera melakukan konsultasi dengan profesional.
-                                        </div>";
+                                    $html .= "<div style='color: #991b1b; margin-bottom: 0.75rem; padding: 0.75rem; border-left: 4px solid #ef4444; background-color: #fef2f2; border-radius: 0 0.25rem 0.25rem 0;'>";
+                                    $html .= "<strong style='display: block; margin-bottom: 0.25rem;'>Domain yang Membutuhkan Rujukan Khusus:</strong>";
+                                    $html .= "Domain <strong>{$domainGagal}</strong>. Disarankan untuk segera melakukan konsultasi.";
+                                    $html .= "</div>";
                                 }
 
+                                // Jika butuh stimulasi, tampilkan detail kuning beserta list rekomendasinya
                                 if (count($butuhStimulasi) > 0) {
-                                    $html .= "<div style='background-color: #fef9c3; color: #854d0e; padding: 1rem; border-radius: 0.5rem; margin-bottom: 0.75rem; border: 1px solid #facc15;'>
-                                        <strong style='font-size: 1.1em; display: block; margin-bottom: 0.25rem;'>SISWA MEMBUTUHKAN STIMULASI:</strong>
-                                        Terdapat perkembangan yang kurang optimal. Disarankan untuk memberikan stimulasi berikut sebagai tambahan di area tersebut>
-                                        <ul style='margin-top: 0.5rem; margin-bottom: 0; padding-left: 1.5rem;'>";
+                                    $html .= "<div style='color: #854d0e; margin-bottom: 0.75rem; padding: 0.75rem; border-left: 4px solid #eab308; background-color: #fefce8; border-radius: 0 0.25rem 0.25rem 0;'>";
+                                    $html .= "<strong style='display: block; margin-bottom: 0.25rem;'>Domain yang Membutuhkan Stimulasi Tambahan:</strong>";
+                                    $html .= "<ul style='margin-top: 0.25rem; margin-bottom: 0; padding-left: 1.25rem;'>";
                                     
                                     foreach ($butuhStimulasi as $jenis) {
-                                        $rekomendasiDb = Rekomendasi::where('jenis_rekomendasi', $jenis)->pluck('nama_rekomendasi')->toArray();
-
+                                        $rekomendasiDb = \App\Models\Rekomendasi::where('jenis_rekomendasi', $jenis)->pluck('nama_rekomendasi')->toArray();
                                         $teksRekomendasi = count($rekomendasiDb) > 0 
                                             ? implode("; ", $rekomendasiDb) 
                                             : "<em>(Belum ada data rekomendasi di database)</em>";
@@ -123,12 +159,32 @@ class PerkembanganInfolist
                                     $html .= "</ul></div>";
                                 }
 
-                                if (count($butuhRujukan) === 0 && count($butuhStimulasi) === 0) {
-                                    $html .= "<div style='background-color: #dcfce3; color: #166534; padding: 1rem; border-radius: 0.5rem; margin-bottom: 0.75rem; border: 1px solid #4ade80;'>
-                                        <strong style='font-size: 1.1em; display: block; margin-bottom: 0.25rem;'>PERKEMBANGAN SISWA SESUAI:</strong>
-                                        Siswa menunjukkan perkembangan yang sesuai dengan usianya pada semua domain. Tetap berikan stimulasi yang baik untuk mendukung perkembangan optimal.
-                                        </div>";
+                                // Jika ada yang sesuai, tampilkan detail hijaunya
+                                if (count($sesuai) > 0) {
+                                    $domainSesuai = implode(', ', $sesuai);
+                                    $html .= "<div style='color: #166534; margin-bottom: 0.75rem; padding: 0.75rem; border-left: 4px solid #22c55e; background-color: #f0fdf4; border-radius: 0 0.25rem 0.25rem 0;'>";
+                                    $html .= "<strong style='display: block; margin-bottom: 0.25rem;'>Domain yang Sesuai dengan Perkembangan:</strong>";
+                                    $html .= "Domain <strong>{$domainSesuai}</strong> telah berkembang dengan baik sesuai usianya.";
+                                    $html .= "</div>";
                                 }
+
+                                if (count($butuhStimulasi) > 0) {
+                                    $html .= "<div style='color: #854d0e; margin-bottom: 0.75rem; padding: 0.75rem; border-left: 4px solid #08aaea; background-color: #e8f7fe; border-radius: 0 0.25rem 0.25rem 0;'>";
+                                    $html .= "<strong style='display: block; margin-bottom: 0.25rem;'>Domain yang Membutuhkan Stimulasi Tambahan:</strong>";
+                                    $html .= "<ul style='margin-top: 0.25rem; margin-bottom: 0; padding-left: 1.25rem;'>";
+                                    
+                                    foreach ($butuhStimulasi as $jenis) {
+                                        $rekomendasiDb = \App\Models\Rekomendasi::where('jenis_rekomendasi', $jenis)->pluck('nama_rekomendasi')->toArray();
+                                        $teksRekomendasi = count($rekomendasiDb) > 0 
+                                            ? implode("; ", $rekomendasiDb) 
+                                            : "<em>(Belum ada data rekomendasi di database)</em>";
+
+                                        $html .= "<li style='margin-bottom: 0.25rem;'><strong>" . ucwords($jenis) . ":</strong> " . $teksRekomendasi . "</li>";
+                                    }
+                                    $html .= "</ul></div>";
+                                }
+
+                                $html .= "</div>"; // End Detail container
 
                                 return new HtmlString($html);
                             }),
