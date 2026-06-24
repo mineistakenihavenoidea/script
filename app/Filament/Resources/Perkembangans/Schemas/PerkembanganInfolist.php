@@ -138,25 +138,17 @@ class PerkembanganInfolist
                                     $domainGagal = implode(', ', $butuhRujukan);
                                     $html .= "<div style='color: #991b1b; margin-bottom: 0.75rem; padding: 0.75rem; border-left: 4px solid #ef4444; background-color: #fef2f2; border-radius: 0 0.25rem 0.25rem 0;'>";
                                     $html .= "<strong style='display: block; margin-bottom: 0.25rem;'>Domain yang Membutuhkan Rujukan Khusus:</strong>";
-                                    $html .= "Domain <strong>{$domainGagal}</strong>. Disarankan untuk segera melakukan konsultasi.";
+                                    $html .= "<strong>{$domainGagal}</strong>";
                                     $html .= "</div>";
                                 }
 
                                 // Jika butuh stimulasi, tampilkan detail kuning beserta list rekomendasinya
                                 if (count($butuhStimulasi) > 0) {
+                                    $domainKurang = implode(', ', $butuhStimulasi);
                                     $html .= "<div style='color: #854d0e; margin-bottom: 0.75rem; padding: 0.75rem; border-left: 4px solid #eab308; background-color: #fefce8; border-radius: 0 0.25rem 0.25rem 0;'>";
                                     $html .= "<strong style='display: block; margin-bottom: 0.25rem;'>Domain yang Membutuhkan Stimulasi Tambahan:</strong>";
-                                    $html .= "<ul style='margin-top: 0.25rem; margin-bottom: 0; padding-left: 1.25rem;'>";
-                                    
-                                    foreach ($butuhStimulasi as $jenis) {
-                                        $rekomendasiDb = \App\Models\Rekomendasi::where('jenis_rekomendasi', $jenis)->pluck('nama_rekomendasi')->toArray();
-                                        $teksRekomendasi = count($rekomendasiDb) > 0 
-                                            ? implode("; ", $rekomendasiDb) 
-                                            : "<em>(Belum ada data rekomendasi di database)</em>";
-
-                                        $html .= "<li style='margin-bottom: 0.25rem;'><strong>" . ucwords($jenis) . ":</strong> " . $teksRekomendasi . "</li>";
-                                    }
-                                    $html .= "</ul></div>";
+                                    $html .= "<strong>{$domainKurang}</strong>";
+                                    $html .= "</div>";
                                 }
 
                                 // Jika ada yang sesuai, tampilkan detail hijaunya
@@ -164,30 +156,40 @@ class PerkembanganInfolist
                                     $domainSesuai = implode(', ', $sesuai);
                                     $html .= "<div style='color: #166534; margin-bottom: 0.75rem; padding: 0.75rem; border-left: 4px solid #22c55e; background-color: #f0fdf4; border-radius: 0 0.25rem 0.25rem 0;'>";
                                     $html .= "<strong style='display: block; margin-bottom: 0.25rem;'>Domain yang Sesuai dengan Perkembangan:</strong>";
-                                    $html .= "Domain <strong>{$domainSesuai}</strong> telah berkembang dengan baik sesuai usianya.";
+                                    $html .= "<strong>{$domainSesuai}</strong>";
                                     $html .= "</div>";
-                                }
-
-                                if (count($butuhStimulasi) > 0) {
-                                    $html .= "<div style='color: #854d0e; margin-bottom: 0.75rem; padding: 0.75rem; border-left: 4px solid #08aaea; background-color: #e8f7fe; border-radius: 0 0.25rem 0.25rem 0;'>";
-                                    $html .= "<strong style='display: block; margin-bottom: 0.25rem;'>Domain yang Membutuhkan Stimulasi Tambahan:</strong>";
-                                    $html .= "<ul style='margin-top: 0.25rem; margin-bottom: 0; padding-left: 1.25rem;'>";
-                                    
-                                    foreach ($butuhStimulasi as $jenis) {
-                                        $rekomendasiDb = \App\Models\Rekomendasi::where('jenis_rekomendasi', $jenis)->pluck('nama_rekomendasi')->toArray();
-                                        $teksRekomendasi = count($rekomendasiDb) > 0 
-                                            ? implode("; ", $rekomendasiDb) 
-                                            : "<em>(Belum ada data rekomendasi di database)</em>";
-
-                                        $html .= "<li style='margin-bottom: 0.25rem;'><strong>" . ucwords($jenis) . ":</strong> " . $teksRekomendasi . "</li>";
-                                    }
-                                    $html .= "</ul></div>";
                                 }
 
                                 $html .= "</div>"; // End Detail container
 
                                 return new HtmlString($html);
                             }),
+                                                        // === TOMBOL POPUP MUNCUL DI SINI (TEPAT DI BAWAH DETAIL) ===
+                                // 2. TOMBOL ACTION MUNCUL POP-UP REKOMENDASI (Ditaruh di bawah TextEntry)
+                            Actions::make([
+                                Action::make('lihat_rekomendasi')
+                                    ->label('Lihat Rekomendasi')
+                                    ->icon('heroicon-m-hand-raised')
+                                    ->color('info')
+                                    ->button()
+                                    ->modalHeading('Rekomendasi Stimulasi Perkembangan')
+                                    ->modalDescription('Daftar stimulasi spesifik berdasarkan analisis penilaian domain siswa.')
+                                    ->modalWidth('4xl')
+                                    ->modalSubmitAction(false)
+                                    ->modalCancelActionLabel('Tutup')
+
+                                    ->infolist([
+                                        TextEntry::make('rekomendasi_modal_content')
+                                            ->hiddenLabel()
+                                            ->html()
+                                            ->columnSpanFull()
+                                            ->state(fn ($record) => new \Illuminate\Support\HtmlString(
+                                                static::generateRekomendasiBoxes($record)
+                                            )),
+                                    ]),
+                            ])
+                            ->columnSpanFull()
+                            ->alignStart()
                         ])
                         ->columnSpan(1),
                     ]),
@@ -225,7 +227,8 @@ class PerkembanganInfolist
                             fn ($record) => [
                                 'record' => $record,
                             ]
-                        ),
+                        )
+                        ->key('chart-perkembangan-usia-'),
                     ])
                 ])
                 ->columnSpanFull(),
@@ -235,6 +238,7 @@ class PerkembanganInfolist
                         'record' => $record,
                     ]
                 )
+                ->key('chart-trend-perkembangan-')
                 ->columnSpanFull(),
             ]);
     }
@@ -283,5 +287,68 @@ class PerkembanganInfolist
                 ];
             })
             ->columnSpanFull();
+    }
+
+    protected static function generateRekomendasiBoxes($record): string
+    {
+        $domains = [
+            'motorik_halus' => 'Motorik Halus',
+            'motorik_kasar' => 'Motorik Kasar',
+            'bahasa' => 'Bahasa',
+            'sosial_kemandirian' => 'Sosial Kemandirian',
+        ];
+        /* * PERHATIAN LOGIKA KELOMPOK USIA:
+        * Mengambil usia berikutnya dengan cara mencari data kelompok usia yang lebih besar 
+        * di tabel DomainPerkembangan. Jika formatmu berupa teks (misal: "5 Tahun"), 
+        * pastikan query order/komparasinya tetap valid di databasemu.
+        */
+        $nextUsia = DomainPerkembangan::where('kelompok_usia', '>', $record->kelompok_usia)
+                        ->orderBy('kelompok_usia', 'asc')
+                        ->value('kelompok_usia') ?? $record->kelompok_usia;
+
+        $html = '<div class="grid grid-cols-1 md:grid-cols-2 gap-4">';
+
+        foreach ($domains as $column => $label) {
+            $score = $record->{"nilai_{$column}"};
+            
+            if (is_null($score)) continue;
+
+            $targetUsia = $record->kelompok_usia;
+            $statusTeks = '';
+            // Tentukan Target Usia Rekomendasi berdasarkan Nilai
+            if ($score < 60) {
+                $statusTeks = "Sangat disarankan berkonsultasi dengan profesional untuk penanganan.";
+                $targetUsia = $record->kelompok_usia; 
+            } elseif ($score < 80) {
+                $statusTeks = "Fokus stimulasi pada penguatan kemampuan dasar usia {$record->kelompok_usia}.";
+                $targetUsia = $record->kelompok_usia; // Ambil rekomendasi usia SAAT INI
+            } else {
+                $statusTeks = "Sangat baik! Berikan stimulasi tahap selanjutnya (usia {$nextUsia}).";
+                $targetUsia = $nextUsia; // Ambil rekomendasi usia BERIKUTNYA
+            }
+
+            // Pastikan tabel Rekomendasi kamu memiliki kolom 'kelompok_usia' untuk dicocokkan
+            $rekomendasiDb = Rekomendasi::where('jenis_rekomendasi', strtolower($label))
+                                ->where('kelompok_usia', $targetUsia)
+                                ->pluck('nama_rekomendasi')
+                                ->toArray();
+
+            $listHtml = count($rekomendasiDb) > 0
+                ? '<ul class="list-disc pl-5 mt-2 text-sm space-y-1"><li>' . implode('</li><li>', $rekomendasiDb) . '</li></ul>'
+                : '<p class="mt-2 text-sm italic opacity-80">(Belum ada data rekomendasi tertulis untuk tahap ini)</p>';
+
+            // HTML untuk Kotak Biru dengan sudut melengkung (Rounded)
+            $html .= "<div class=\"bg-[#3b82f6] text-white p-5 rounded-2xl shadow-md\">
+                        <div class=\"border-b border-blue-400/50 pb-2 mb-3\">
+                            <h3 class=\"font-bold text-lg uppercase tracking-wide\">{$label}</h3>
+                            <p class=\"text-blue-100 text-sm mt-1\">{$statusTeks}</p>
+                        </div>
+                        {$listHtml}
+                    </div>";
+        }
+
+        $html .= '</div>';
+        
+        return $html;
     }
 }
