@@ -43,11 +43,6 @@ class AdminPanelProvider extends PanelProvider
                 NavigationGroup::make('Pengurus')
                     ->icon('heroicon-o-user-plus'),
             ])
-            ->renderHook( PanelsRenderHook::HEAD_END, fn (): string => 
-            Blade::render(' <style> /* Target nama di User Menu dropdown */ .fi-user-menu-label 
-            { display: flex !important; flex-direction: column !important; align-items: flex-start !important; line-height: 1.2 !important; } 
-             /* Memanipulasi teks setelah tanda "|" agar jadi baris baru */ .fi-user-menu-label { white-space: pre-wrap; } </style> '), )
-
             ->colors([
                 'primary' => Color::Blue,
                 'secondary' => Color::Green,
@@ -77,8 +72,8 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->renderHook(
                 PanelsRenderHook::HEAD_END,
-                fn (): string => Blade::render('
-                    <style>
+                fn (): string => 
+                    '<style>
                         body {
                             background-image: linear-gradient(rgba(15, 23, 42, 0.75), rgba(15, 23, 42, 0.85)), url("/storage/yukkie.png") !important;
                             background-size: cover !important;
@@ -90,14 +85,12 @@ class AdminPanelProvider extends PanelProvider
                             background-color: transparent !important;
                         }
 
-                        .fi-topbar .fi-global-search,
-                        .fi-global-search {
+                        .fi-topbar .fi-global-search,.fi-global-search {
                             display: none !important;
                         }
 
                         .fi-dropdown-panel, .fi-modal-window, .fi-no-notification {
                             background-color: rgba(255, 255, 255, 0.95) !important;
-                            backdrop-filter: blur(16px) !important;
                             border-radius: 1rem !important;
                             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3) !important;
                         }
@@ -138,29 +131,25 @@ class AdminPanelProvider extends PanelProvider
 
                         .fi-topbar {
                             background-color: rgba(255, 238, 0, 0.7) !important; 
-                            backdrop-filter: blur(12px) !important;
                             border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
                         }
+
                         .fi-logo {
                             color: #ffffff !important; 
                             text-shadow: 1px 1px 3px rgba(0,0,0,0.6); 
                         }
 
-                        .fi-main .fi-section, 
-                        .fi-ta-content {
+                        .fi-main .fi-section, .fi-ta-content {
                             background-color: rgba(240, 253, 244, 0.9) !important; 
-                            backdrop-filter: blur(10px) !important;
                             border: 1px solid rgba(134, 239, 172, 0.4) !important;
                             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
                         }
-                        .dark .fi-main .fi-section, 
-                        .dark .fi-ta-content {
+                        .dark .fi-main .fi-section, .dark .fi-ta-content {
                             background-color: rgb(0, 0, 0, 0.5) !important; 
                         }
                         
                         .fi-wi-stats-overview-stat {
                             background-color: rgba(240, 253, 244, 0.9) !important; 
-                            backdrop-filter: blur(10px) !important;
                             border: 1px solid rgba(134, 239, 172, 0.4) !important;
                             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
                             border-radius: 0.75rem !important;
@@ -210,8 +199,7 @@ class AdminPanelProvider extends PanelProvider
                             line-height: 1.2 !important; 
                             white-space: pre-wrap; 
                         }
-                    </style>
-                ')
+                    </style>'
             );
     }
 }

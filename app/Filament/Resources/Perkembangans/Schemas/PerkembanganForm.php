@@ -153,7 +153,6 @@ class PerkembanganForm
                         return $fields;
                     })
                     ->key('indicatorFields')
-                    //
             ]);
     }
 }

@@ -28,6 +28,7 @@ class ListSiswas extends ListRecords
                 ->icon(fn () => $this->onlyActiveTa ? 'heroicon-m-arrows-pointing-out' : 'heroicon-m-arrows-pointing-in')
                 ->action(function () {
                     $this->onlyActiveTa = ! $this->onlyActiveTa;
+                    session(['onlyActiveTa' => $this->onlyActiveTa]);
                 }),
         ];
     }
@@ -54,6 +55,11 @@ class ListSiswas extends ListRecords
     }
 
     public bool $onlyActiveTa = true;
+
+    public function mount(): void
+    {
+        $this->onlyActiveTa = session('onlyActiveTa', true);
+    }
 
     protected function getTableQuery(): Builder
     {

@@ -49,10 +49,13 @@ class PerkembanganInfolist
                                 // DATA (KANAN)
                                 Grid::make(2)
                                 ->schema([
-                                    TextEntry::make('nama_siswa')->weight('bold'),
+                                    TextEntry::make('nama_siswa')
+                                        ->weight('bold'),
                                     TextEntry::make('kelas'),
                                     TextEntry::make('pengisi')
-                                    ->label('Pengisi'),
+                                        ->label('Pengisi'),
+                                    TextEntry::make('kelompok_usia')
+                                        ->label('Kelompok Usia'),
                                 ])
                                 ->columnSpan(2),
                             ]),
@@ -246,7 +249,7 @@ class PerkembanganInfolist
                         ->formatStateUsing(fn ($state) => round($state) . ' / 100'),
 
                     TextEntry::make("nilai_{$column}")
-                        ->hiddenLabel() // no duplicate label
+                        ->hiddenLabel() 
                         ->formatStateUsing(fn ($state, $record) => ucwords($record->classifyScore($state)))
                         ->color(fn ($state) =>
                             $state >= 80 ? 'success' :
@@ -323,20 +326,20 @@ class PerkembanganInfolist
                     $boxStyle = "border-left: 4px solid #eab308; background-color: #fefce8; color: #854d0e;";
                     $titleStyle = "color: #854d0e;";
                     $badgeStyle = "background-color: #fde047; color: #713f12;";
-                    $targetUsia = $currentUsiaStr; // Tetap di usia saat ini
+                    $targetUsia = $currentUsiaStr; 
                 } else {
                     $statusTeks = "Sesuai";
                     $boxStyle = "border-left: 4px solid #22c55e; background-color: #f0fdf4; color: #166534;";
                     $titleStyle = "color: #166534;";
                     $badgeStyle = "background-color: #86efac; color: #14532d;";
-                    $targetUsia = $nextUsiaStr; // Naik level ke usia selanjutnya
+                    $targetUsia = $nextUsiaStr; 
                 }
 
                 if ($targetUsia) {
-                    $rekomendasiDb = \App\Models\Rekomendasi::where('jenis_rekomendasi', $jenisRekomDB)
-                                                    ->where('kelompok_usia', $targetUsia)
-                                                    ->pluck('nama_rekomendasi')
-                                                    ->toArray();
+                    $rekomendasiDb = Rekomendasi::where('jenis_rekomendasi', $jenisRekomDB)
+                                        ->where('kelompok_usia', $targetUsia)
+                                        ->pluck('nama_rekomendasi')
+                                        ->toArray();
 
                     if (count($rekomendasiDb) > 0) {
                         $listHtml = "<strong style='font-size: 0.875rem; display: block; margin-top: 0.75rem;'>Rekomendasi ({$targetUsia}):</strong>";

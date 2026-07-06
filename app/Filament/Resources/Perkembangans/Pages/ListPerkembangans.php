@@ -89,17 +89,19 @@ class ListPerkembangans extends ListRecords
                     return Excel::download(new PerkembanganExport($data), 'Data_Perkembangan_Siswa.xlsx');
                 }),
             Action::make('toggleLatestPerkembangan')
-                ->label(fn () => $this->onlyLatestPerkembangan ? 'Semua Data' : 'Data Terbaru')
+                ->label(fn () => $this->onlyLatestPerkembangan ? 'Data Terbaru' : 'Semua Data')
                 ->color(fn () => $this->onlyLatestPerkembangan ? 'success' : 'gray')
                 ->action(function () {
                     $this->onlyLatestPerkembangan = ! $this->onlyLatestPerkembangan;
+                    session(['onlyLatestPerkembangan' => $this->onlyLatestPerkembangan]);
                 }),
             Action::make('toggleActiveTa')
-                ->label(fn () => $this->onlyActiveTa ? 'Siswa Aktif' : 'Semua Data')
+                ->label(fn () => $this->onlyActiveTa ? 'Siswa Aktif' : 'Semua Siswa')
                 ->color(fn () => $this->onlyActiveTa ? 'success' : 'gray')
                 ->icon(fn () => $this->onlyActiveTa ? 'heroicon-m-arrows-pointing-out' : 'heroicon-m-arrows-pointing-in')
                 ->action(function () {
                     $this->onlyActiveTa = ! $this->onlyActiveTa;
+                    session(['onlyActiveTa' => $this->onlyActiveTa]);
                 }),
         ];
     }
@@ -132,9 +134,15 @@ class ListPerkembangans extends ListRecords
         ];
     }
 
-    public bool $onlyLatestPerkembangan = false;
+    public bool $onlyLatestPerkembangan = true;
 
     public bool $onlyActiveTa = true;
+
+    public function mount(): void
+    {
+        $this->onlyActiveTa = session('onlyActiveTa', true);
+        $this->onlyLatestPerkembangan = session('onlyLatestPerkembangan', true);
+    }
 
     protected function getTableQuery(): Builder
     {
