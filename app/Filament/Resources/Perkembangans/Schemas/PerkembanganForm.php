@@ -37,7 +37,7 @@ class PerkembanganForm
                                 $set('foto', null);
                                 $set('kelompok_usia', null);
                             }),
-                        Select::make('nama_siswa')
+                        Select::make('id_siswa')
                             ->label('Nama Siswa')
                             ->options(function (Get $get) {
                                 $kelas = $get('kelas');
@@ -53,19 +53,20 @@ class PerkembanganForm
 
                                 return Siswa::where('kelas', $kelas)
                                         ->whereIn('ta_masuk', $angkatanAktif)
-                                        ->pluck('nama_siswa', 'nama_siswa');
+                                        ->pluck('nama_siswa', 'id');
                             })
                             ->live()
                             ->required()
                             ->searchable()
                             ->afterStateUpdated(function ($state, Set $set){
                                 if ($state) {
-                                    $siswa = Siswa::where('nama_siswa', $state)->first();
+                                    $siswa = Siswa::find($state);
                                     if ($siswa) {
-                                        $set('foto', $siswa->foto ?? null);                            
+                                        $set('foto', $siswa->foto ?? null);                
+                                        $set('nama_siswa', $siswa->nama_siswa);            
                                     }
 
-                                    $perkembanganTerakhir = Perkembangan::where('nama_siswa', $state)
+                                    $perkembanganTerakhir = Perkembangan::where('id_siswa', $state)
                                     ->latest()
                                     ->first();
 
@@ -84,6 +85,7 @@ class PerkembanganForm
                                 } else {
                                     $set('foto', null);
                                     $set('kelompok_usia', null);
+                                    $set('nama_siswa', null);
                                 }
                             }),
                     ]),
@@ -102,6 +104,7 @@ class PerkembanganForm
                             
                         Hidden::make('foto'),
                         Hidden::make('pengisi'),
+                        Hidden::make('nama_siswa'),
 
                         Placeholder::make('foto_preview')
                             ->label('Foto Siswa')

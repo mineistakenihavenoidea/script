@@ -24,6 +24,7 @@ use App\Filament\Widgets\CustomAccountWidget;
 use Illuminate\Support\Facades\Blade;
 use Filament\View\PanelsRenderHook;
 use Filament\Support\Facades\FilamentColor;
+use Illuminate\Support\HtmlString;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -34,6 +35,33 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->brandName('Sistem Monitoring Perkembangan Anak PAUD')
+            ->brandLogo(fn () => new HtmlString('
+                <div style="
+                    display:flex;
+                    align-items:center;
+                    gap:12px;
+                    white-space:nowrap;
+                ">
+                    <img
+                        src="/storage/testlogo.png"
+                        alt="Logo"
+                        style="
+                            width:60px;
+                            height:60px;
+                            object-fit:contain;
+                            flex-shrink:0;
+                        "
+                    />
+
+                    <span style="
+                        font-weight:700;
+                        font-size:1.2rem;
+                        line-height:1;
+                    ">
+                        Sistem Monitoring Perkembangan Anak PAUD
+                    </span>
+                </div>
+            '))
             ->login(Login::class)
             ->navigationGroups([
                 NavigationGroup::make('Data Perkembangan')
