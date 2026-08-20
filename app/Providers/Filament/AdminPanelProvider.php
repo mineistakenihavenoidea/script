@@ -35,33 +35,33 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->brandName('Sistem Monitoring Perkembangan Anak PAUD')
-            ->brandLogo(fn () => new HtmlString('
-                <div style="
-                    display:flex;
-                    align-items:center;
-                    gap:12px;
-                    white-space:nowrap;
-                ">
-                    <img
-                        src="/storage/testlogo.png"
-                        alt="Logo"
-                        style="
-                            width:60px;
-                            height:60px;
-                            object-fit:contain;
-                            flex-shrink:0;
-                        "
-                    />
+            // ->brandLogo(fn () => new HtmlString('
+            //     <div style="
+            //         display:flex;
+            //         align-items:center;
+            //         gap:12px;
+            //         white-space:nowrap;
+            //     ">
+            //         <img
+            //             src="/storage/logo.jpg"
+            //             alt="Logo"
+            //             style="
+            //                 width:60px;
+            //                 height:60px;
+            //                 object-fit:contain;
+            //                 flex-shrink:0;
+            //             "
+            //         />
 
-                    <span style="
-                        font-weight:700;
-                        font-size:1.2rem;
-                        line-height:1;
-                    ">
-                        Sistem Monitoring Perkembangan Anak PAUD
-                    </span>
-                </div>
-            '))
+            //         <span style="
+            //             font-weight:700;
+            //             font-size:1.2rem;
+            //             line-height:1;
+            //         ">
+            //             Sistem Monitoring Perkembangan Anak PAUD
+            //         </span>
+            //     </div>
+            // '))
             ->login(Login::class)
             ->navigationGroups([
                 NavigationGroup::make('Data Perkembangan')
@@ -103,7 +103,7 @@ class AdminPanelProvider extends PanelProvider
                 fn (): string => 
                     '<style>
                         body {
-                            background-image: linear-gradient(rgba(15, 23, 42, 0.75), rgba(15, 23, 42, 0.85)), url("/storage/yukkie.png") !important;
+                            background-image: linear-gradient(rgba(15, 23, 42, 0.75), rgba(15, 23, 42, 0.85)), url("/storage/school.jpeg") !important;
                             background-size: cover !important;
                             background-position: center !important;
                             background-attachment: fixed !important;

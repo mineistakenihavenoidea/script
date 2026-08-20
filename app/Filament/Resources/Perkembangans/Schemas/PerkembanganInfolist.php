@@ -342,8 +342,13 @@ class PerkembanganInfolist
                                         ->toArray();
 
                     if (count($rekomendasiDb) > 0) {
-                        $listHtml = "<strong style='font-size: 0.875rem; display: block; margin-top: 0.75rem;'>Rekomendasi ({$targetUsia}):</strong>";
-                        $listHtml .= '<ul style="list-style-type: disc; padding-left: 1.5rem; margin-top: 0.25rem; font-size: 0.875rem;"><li>' . implode('</li><li>', $rekomendasiDb) . '</li></ul>';
+                        if ($targetUsia === $currentUsiaStr) {
+                            $listHtml = "<strong style='font-size: 0.875rem; display: block; margin-top: 0.75rem;'>Rekomendasi ({$targetUsia}):</strong>";
+                            $listHtml .= '<ul style="list-style-type: disc; padding-left: 1.5rem; margin-top: 0.25rem; font-size: 0.875rem;"><li>' . implode('</li><li>', $rekomendasiDb) . '</li></ul>';
+                        } else {
+                            $listHtml = "<strong style='font-size: 0.875rem; display: block; margin-top: 0.75rem;'>Rekomendasi untuk Usia Selanjutnya ({$targetUsia}):</strong>";
+                            $listHtml .= '<ul style="list-style-type: disc; padding-left: 1.5rem; margin-top: 0.25rem; font-size: 0.875rem;"><li>' . implode('</li><li>', $rekomendasiDb) . '</li></ul>';
+                        }
                     } else {
                         $listHtml = '<p style="font-size: 0.875rem; font-style: italic; opacity: 0.8; margin-top: 0.5rem;">(Belum ada data rekomendasi tertulis untuk tahap ini)</p>';
                     }
