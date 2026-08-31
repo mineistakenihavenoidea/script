@@ -13,11 +13,8 @@ class DashoardStatsOverview extends StatsOverviewWidget
 {
     protected static ?int $sort = 1;
 
-    
-
     protected function getStats(): array
     {
-        // 1. Menentukan Tahun Ajaran Saat Ini (Juli - Juni)
         $startYear = now()->month >= 7 ? now()->year : now()->year - 1;
         $startDate = Carbon::create($startYear, 7, 1)->startOfDay();
         $endDate = Carbon::create($startYear + 1, 6, 30)->endOfDay();
@@ -46,8 +43,8 @@ class DashoardStatsOverview extends StatsOverviewWidget
                     ->whereBetween('nilai_sosial_kemandirian', [60, 79]);
             })
             ->count();
-        // Menghitung berapa penilaian yang butuh rujukan (nilai di bawah 60)
-        $butuhRujukan = (clone $latestPerkembangan)
+
+            $butuhRujukan = (clone $latestPerkembangan)
             ->whereBetween('created_at', [$startDate, $endDate])
             ->where(function ($q) {
                 $q->where('nilai_motorik_halus', '<', 60)
@@ -61,26 +58,75 @@ class DashoardStatsOverview extends StatsOverviewWidget
             Stat::make('Total Siswa', Siswa::whereIn('ta_masuk', $activeTa)->count())
                 ->description('Siswa Aktif Tahun Ini')
                 ->descriptionIcon('heroicon-m-user-group')
+                ->chart(Siswa::whereIn('ta_masuk', $activeTa)
+                    ->selectRaw('MONTH(created_at) as month, COUNT(*) as count')
+                    ->whereBetween('created_at', [$startDate, $endDate])
+                    ->groupBy('month')
+                    ->orderBy('month')
+                    ->get()
+                    ->map(fn ($item) => $item->count)
+                    ->toArray())
                 ->color('primary'),
 
             Stat::make('Data Perkembangan', Perkembangan::whereBetween('created_at', [$startDate, $endDate])->count())
                 ->description('Total Perekaman Tahun Ini')
                 ->descriptionIcon('heroicon-m-chart-bar')
+                ->chart(Perkembangan::whereBetween('created_at', [$startDate, $endDate])
+                    ->selectRaw('MONTH(created_at) as month, COUNT(*) as count')
+                    ->groupBy('month')
+                    ->orderBy('month')
+                    ->get()
+                    ->map(fn ($item) => $item->count)
+                    ->toArray())
                 ->color('success'),
             // Tambahkan model/data lain di sini jika ada, menggunakan whereBetween yang sama
             Stat::make('Total Siswa', Siswa::count())
                 ->description('Jumlah siswa terdaftar')
                 ->descriptionIcon('heroicon-m-user-group')
+                ->chart(Siswa::selectRaw('MONTH(created_at) as month, COUNT(*) as count')
+                    ->groupBy('month')
+                    ->orderBy('month')
+                    ->get()
+                    ->map(fn ($item) => $item->count)
+                    ->toArray())
                 ->color('success'),
 
             Stat::make('Siswa butuh stimulasi', $butuhStimulasi)
                 ->description("Terdapat {$butuhStimulasi} siswa membutuhkan stimulasi tambahan")
                 ->descriptionIcon('heroicon-m-exclamation-triangle')
+                ->chart((clone $latestPerkembangan)
+                    ->whereBetween('created_at', [$startDate, $endDate])
+                    ->where(function ($q) {
+                        $q->where('nilai_motorik_halus', '<', 60)
+                            ->orWhere('nilai_motorik_kasar', '<', 60)
+                            ->orWhere('nilai_bahasa', '<', 60)
+                            ->orWhere('nilai_sosial_kemandirian', '<', 60);
+                    })
+                    ->selectRaw('MONTH(created_at) as month, COUNT(*) as count')
+                    ->groupBy('month')
+                    ->orderBy('month')
+                    ->get()
+                    ->map(fn ($item) => $item->count)
+                    ->toArray())
                 ->color('warning'),
                 
             Stat::make('Peringatan Rujukan', $butuhRujukan)
                 ->description("Terdapat {$butuhRujukan} siswa membutuhkan rujukan")
                 ->descriptionIcon('heroicon-m-exclamation-triangle')
+                ->chart((clone $latestPerkembangan)
+                    ->whereBetween('created_at', [$startDate, $endDate])
+                    ->where(function ($q) {
+                        $q->where('nilai_motorik_halus', '<', 60)
+                            ->orWhere('nilai_motorik_kasar', '<', 60)
+                            ->orWhere('nilai_bahasa', '<', 60)
+                            ->orWhere('nilai_sosial_kemandirian', '<', 60);
+                    })
+                    ->selectRaw('MONTH(created_at) as month, COUNT(*) as count')
+                    ->groupBy('month')
+                    ->orderBy('month')
+                    ->get()
+                    ->map(fn ($item) => $item->count)
+                    ->toArray())
                 ->color('danger'),
         ];
     }

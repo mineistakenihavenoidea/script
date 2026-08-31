@@ -28,6 +28,7 @@ class SiswasTable
                 Stack::make([
                     ImageColumn::make('foto')
                         ->label('foto')
+                        ->disk('lokal')
                         ->circular()
                         ->size(200),
                     TextColumn::make('nama_siswa')

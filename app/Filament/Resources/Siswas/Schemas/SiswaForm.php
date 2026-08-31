@@ -29,7 +29,8 @@ class SiswaForm
                                 ->required(fn (string $operation): bool => $operation === 'create'),
                             TextInput::make('no_induk')
                                 ->label('Nomor Induk')
-                                ->required(fn (string $operation): bool => $operation === 'create'),
+                                ->required(fn (string $operation): bool => $operation === 'create')
+                                ->unique(ignoreRecord: true),
                             DatePicker::make('tanggal_lahir')
                                 ->label('Tanggal Lahir')
                                 ->displayFormat('d F Y')
@@ -77,6 +78,7 @@ class SiswaForm
                                 ->uploadButtonPosition('left')
                                 ->uploadProgressIndicatorPosition('left')
                                 ->label('Foto')
+                                ->disk('lokal')
                                 ->directory('foto-siswa')
                                 ->acceptedFileTypes(['image/*']),
                     ])

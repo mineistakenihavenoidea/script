@@ -57,21 +57,64 @@ class PerkembanganStatsOverview extends StatsOverviewWidget
             Stat::make('Total Siswa', Siswa::whereIn('ta_masuk', $activeTa)->count())
                 ->description('Siswa Aktif Tahun Ini')
                 ->descriptionIcon('heroicon-m-user-group')
+                ->chart(Siswa::whereIn('ta_masuk', $activeTa)
+                    ->selectRaw('MONTH(created_at) as month, COUNT(*) as count')
+                    ->whereBetween('created_at', [$startDate, $endDate])
+                    ->groupBy('month')
+                    ->orderBy('month')
+                    ->get()
+                    ->map(fn ($item) => $item->count)
+                    ->toArray())
                 ->color('primary'),
 
             Stat::make('Data Perkembangan', Perkembangan::whereBetween('created_at', [$startDate, $endDate])->count())
                 ->description('Total Perekaman Tahun Ini')
                 ->descriptionIcon('heroicon-m-chart-bar')
+                ->chart(Perkembangan::whereBetween('created_at', [$startDate, $endDate])
+                    ->selectRaw('MONTH(created_at) as month, COUNT(*) as count')
+                    ->groupBy('month')
+                    ->orderBy('month')
+                    ->get()
+                    ->map(fn ($item) => $item->count)
+                    ->toArray())
                 ->color('success'),
 
             Stat::make('Siswa butuh stimulasi', $butuhStimulasi)
                 ->description("Terdapat {$butuhStimulasi} siswa membutuhkan stimulasi tambahan")
                 ->descriptionIcon('heroicon-m-exclamation-triangle')
+                ->chart((clone $latestPerkembangan)
+                    ->whereBetween('created_at', [$startDate, $endDate])
+                    ->where(function ($q) {
+                        $q->where('nilai_motorik_halus', '<', 60)
+                            ->orWhere('nilai_motorik_kasar', '<', 60)
+                            ->orWhere('nilai_bahasa', '<', 60)
+                            ->orWhere('nilai_sosial_kemandirian', '<', 60);
+                    })
+                    ->selectRaw('MONTH(created_at) as month, COUNT(*) as count')
+                    ->groupBy('month')
+                    ->orderBy('month')
+                    ->get()
+                    ->map(fn ($item) => $item->count)
+                    ->toArray())
                 ->color('warning'),
                 
             Stat::make('Peringatan Rujukan', $butuhRujukan)
                 ->description("Terdapat {$butuhRujukan} siswa membutuhkan rujukan")
                 ->descriptionIcon('heroicon-m-exclamation-triangle')
+                ->chart((clone $latestPerkembangan)
+                    ->whereBetween('created_at', [$startDate, $endDate])
+                    ->where(function ($q) {
+                        $q->where('nilai_motorik_halus', '<', 60)
+                            ->orWhere('nilai_motorik_kasar', '<', 60)
+                            ->orWhere('nilai_bahasa', '<', 60)
+                            ->orWhere('nilai_sosial_kemandirian', '<', 60);
+                    })
+                    ->selectRaw('MONTH(created_at) as month, COUNT(*) as count')
+                    ->groupBy('month')
+                    ->orderBy('month')
+                    ->get()
+                    ->map(fn ($item) => $item->count)
+                    ->toArray())
                 ->color('danger'),
         ];
     }

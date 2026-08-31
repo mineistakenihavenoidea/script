@@ -27,6 +27,7 @@ class StaffTable
                     // SISI KIRI: Foto
                     ImageColumn::make('foto')
                         ->label('Foto')
+                        ->disk('lokal')
                         ->circular()
                         ->grow(false) // KUNCI: Biar foto gak melar menuhin layar
                         ->size(100)   // Ukuran dikecilin biar pas di layout grid

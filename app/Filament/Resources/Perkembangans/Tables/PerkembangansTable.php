@@ -24,6 +24,7 @@ use App\Models\Siswa;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use Filament\Tables\Filters\TernaryFilter;
+use App\Models\Perkembangan;
 
 class PerkembangansTable
 {
@@ -139,6 +140,14 @@ class PerkembangansTable
                             ->whereNull('deleted_at')
                             ->groupBy('nama_siswa');
                     })),
+                SelectFilter::make('kelompok_usia')
+                    ->label('Kelompok Usia')
+                    ->options(
+                        Perkembangan::query()
+                            ->distinct()
+                            ->orderBy('kelompok_usia')
+                            ->pluck('kelompok_usia', 'kelompok_usia')
+                    ),
                 TernaryFilter::make('status_perkembangan')
                     ->label('Status')
                     ->placeholder('Semua')

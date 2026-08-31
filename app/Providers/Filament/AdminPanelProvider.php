@@ -103,7 +103,7 @@ class AdminPanelProvider extends PanelProvider
                 fn (): string => 
                     '<style>
                         body {
-                            background-image: linear-gradient(rgba(15, 23, 42, 0.75), rgba(15, 23, 42, 0.85)), url("/storage/school.jpeg") !important;
+                            background-image: linear-gradient(rgba(15, 23, 42, 0), rgba(15, 23, 42, 0)), url("/storage/school.jpeg") !important;
                             background-size: cover !important;
                             background-position: center !important;
                             background-attachment: fixed !important;
@@ -158,7 +158,7 @@ class AdminPanelProvider extends PanelProvider
                         }
 
                         .fi-topbar {
-                            background-color: rgba(255, 238, 0, 0.7) !important; 
+                            background-color: rgb(68, 175, 64) !important; 
                             border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
                         }
 
@@ -173,8 +173,8 @@ class AdminPanelProvider extends PanelProvider
                             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
                         }
                         .dark .fi-main .fi-section, .dark .fi-ta-content {
-                            background-color: rgb(0, 0, 0, 0.5) !important; 
-                        }
+                            background-color: rgba(0, 0, 0, 0.75) !important; 
+                        }                    
                         
                         .fi-wi-stats-overview-stat {
                             background-color: rgba(240, 253, 244, 0.9) !important; 
@@ -201,12 +201,50 @@ class AdminPanelProvider extends PanelProvider
                             background-color: rgba(30, 41, 59, 0.9) !important; 
                         }
 
+                        .fi-header-heading {
+                            color: #1e293b !important; 
+                        }
+
+                        .dark .fi-header-heading {
+                            color: #1e293b !important; 
+                        }
+
+                        .fi-sc {
+                            background-color: rgba(15, 23, 42, 0.5) !important;
+                            border-radius: 0.75rem !important;
+                            border: 1px solid rgba(134, 239, 172, 0.4) !important;
+                        }
+
+                        .dark .fi-sc {
+                            background-color: rgba(15, 23, 42, 0.5) !important;
+                            border-radius: 0.75rem !important;
+                            border: 1px solid rgba(134, 239, 172, 0.4) !important;
+                        }
+
                         .fi-sidebar {
-                            background-color: none !important;
+                            background-color: rgba(105, 151, 224, 0.6) !important;
+                            border-right: 1px solid rgba(134, 239, 172, 0.4) !important;
                         }
 
                         .dark .fi-sidebar {
-                            background-color: none !important;
+                            background-color: rgba(93, 125, 180, 0.75) !important;
+                            border-right: 1px solid rgba(134, 239, 172, 0.4) !important;
+                        }
+                            
+                        .fi-sidebar-group-label {
+                            color: #ffffff !important; 
+                        }
+
+                        .dark .fi-sidebar-group-label {
+                            color: #ffffff !important; 
+                        }
+
+                        .fi-icon{
+                            color: #ffffff !important; 
+                        }
+
+                        .dark .fi-icon{
+                            color: #ffffff !important; 
                         }
 
                         .fi-sidebar-item > a {

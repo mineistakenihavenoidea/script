@@ -1,0 +1,275 @@
+@import 'tailwindcss';
+
+@source '../../../../app/Filament/**/*';
+@source '../../../../resources/views/filament/**/*';
+
+/*
+ * PAUD Monitoring - Filament 5 theme
+ * Clean, academic/admin visual language with strong hierarchy.
+ */
+
+:root {
+    --paud-navy: #0f2747;
+    --paud-navy-2: #163a63;
+    --paud-teal: #0f766e;
+    --paud-teal-soft: #e6f7f4;
+    --paud-slate: #475569;
+    --paud-border: #e2e8f0;
+    --paud-surface: #ffffff;
+    --paud-surface-soft: #f8fafc;
+}
+
+.fi-body {
+    background: #f7f9fc;
+}
+
+.fi-layout {
+    background: #f7f9fc;
+}
+
+/* Sidebar */
+.fi-sidebar {
+    background: var(--paud-surface) !important;
+    border-right: 1px solid var(--paud-border) !important;
+    box-shadow: 6px 0 24px rgba(15, 39, 71, 0.035) !important;
+}
+
+.fi-sidebar-header {
+    background: var(--paud-surface) !important;
+    border-bottom: 1px solid var(--paud-border) !important;
+}
+
+.fi-sidebar-item {
+    margin-inline: .55rem;
+}
+
+.fi-sidebar-item > a {
+    border-radius: .75rem !important;
+    border: 1px solid transparent !important;
+    transition: background-color .16s ease, color .16s ease, border-color .16s ease, transform .16s ease;
+}
+
+.fi-sidebar-item > a:hover {
+    background: #f1f5f9 !important;
+    border-color: #e2e8f0 !important;
+}
+
+.fi-sidebar-item.fi-active > a {
+    background: #eaf5f5 !important;
+    color: var(--paud-teal) !important;
+    border-color: #cce8e4 !important;
+}
+
+.fi-sidebar-item.fi-active > a .fi-sidebar-item-icon {
+    color: var(--paud-teal) !important;
+}
+
+.fi-sidebar-group-button {
+    color: #64748b !important;
+    font-weight: 650 !important;
+    letter-spacing: .01em;
+}
+
+/* Topbar */
+.fi-topbar {
+    background: rgba(255, 255, 255, 0.94) !important;
+    border-bottom: 1px solid var(--paud-border) !important;
+    box-shadow: 0 1px 12px rgba(15, 39, 71, 0.035) !important;
+    backdrop-filter: blur(12px);
+}
+
+.fi-topbar .fi-icon-btn,
+.fi-topbar .fi-btn {
+    border-radius: .7rem !important;
+}
+
+/* Main content */
+.fi-main-ctn {
+    padding-top: 1.25rem !important;
+}
+
+.fi-page-header {
+    margin-bottom: 1rem !important;
+}
+
+.fi-header-heading {
+    color: var(--paud-navy) !important;
+    letter-spacing: -.015em;
+}
+
+.fi-header-subheading {
+    color: var(--paud-slate) !important;
+}
+
+/* Generic panels */
+.fi-section,
+.fi-ta-ctn,
+.fi-wi-widget,
+.fi-wi-stats-overview-stat {
+    background: var(--paud-surface) !important;
+    border: 1px solid var(--paud-border) !important;
+    box-shadow: 0 8px 24px rgba(15, 39, 71, 0.045) !important;
+}
+
+.fi-section,
+.fi-ta-ctn,
+.fi-wi-widget {
+    border-radius: 1rem !important;
+}
+
+.fi-wi-stats-overview {
+    gap: .9rem !important;
+}
+
+.fi-wi-stats-overview-stat {
+    border-radius: 1rem !important;
+    padding: 1rem 1.05rem !important;
+    transition: transform .16s ease, box-shadow .16s ease;
+}
+
+.fi-wi-stats-overview-stat:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 28px rgba(15, 39, 71, 0.08) !important;
+}
+
+.fi-wi-stats-overview-stat-value {
+    color: var(--paud-navy) !important;
+    font-weight: 750 !important;
+    letter-spacing: -.02em;
+}
+
+.fi-wi-stats-overview-stat-description {
+    color: #64748b !important;
+}
+
+/* Table */
+.fi-ta-header-cell {
+    background: #f8fafc !important;
+    color: #475569 !important;
+    font-size: .76rem !important;
+    font-weight: 700 !important;
+    text-transform: uppercase;
+    letter-spacing: .045em;
+}
+
+.fi-ta-row {
+    transition: background-color .12s ease;
+}
+
+.fi-ta-row:hover {
+    background: #f8fbff !important;
+}
+
+.fi-ta-cell {
+    color: #334155;
+}
+
+/* Status badges: readable, not overly saturated */
+.fi-badge {
+    border-radius: 999px !important;
+    font-weight: 650 !important;
+    padding-inline: .6rem !important;
+}
+
+/* Forms */
+.fi-fo-field-wrp-label,
+.fi-fo-field-wrp-label span {
+    color: #334155 !important;
+    font-weight: 650 !important;
+}
+
+.fi-input,
+.fi-select,
+.fi-fo-textarea textarea,
+.fi-fo-checkbox-list {
+    border-radius: .75rem !important;
+    border-color: #cbd5e1 !important;
+}
+
+.fi-input:focus,
+.fi-select:focus,
+.fi-fo-textarea textarea:focus {
+    border-color: #7db6b0 !important;
+    box-shadow: 0 0 0 3px rgba(15, 118, 110, .10) !important;
+}
+
+/* Buttons */
+.fi-btn {
+    border-radius: .75rem !important;
+    font-weight: 650 !important;
+}
+
+/* Brand */
+.fi-logo {
+    color: var(--paud-navy) !important;
+}
+
+/* Modal/dropdown */
+.fi-modal-window,
+.fi-dropdown-panel {
+    border-radius: 1rem !important;
+    border: 1px solid var(--paud-border) !important;
+    box-shadow: 0 20px 48px rgba(15, 39, 71, 0.14) !important;
+}
+
+/* Login */
+.fi-simple-layout {
+    background:
+        radial-gradient(circle at 15% 15%, rgba(15, 118, 110, .08), transparent 32%),
+        radial-gradient(circle at 85% 85%, rgba(22, 58, 99, .08), transparent 34%),
+        #f7f9fc !important;
+}
+
+.fi-simple-main .fi-section {
+    border-radius: 1.15rem !important;
+    box-shadow: 0 24px 55px rgba(15, 39, 71, .10) !important;
+}
+
+.fi-simple-header-heading {
+    color: var(--paud-navy) !important;
+    font-weight: 780 !important;
+}
+
+/* Dark mode stays usable if enabled */
+.dark .fi-body,
+.dark .fi-layout {
+    background: #0b1220 !important;
+}
+
+.dark .fi-sidebar,
+.dark .fi-sidebar-header,
+.dark .fi-topbar,
+.dark .fi-section,
+.dark .fi-ta-ctn,
+.dark .fi-wi-widget,
+.dark .fi-wi-stats-overview-stat {
+    background: #111c2e !important;
+    border-color: #243247 !important;
+}
+
+.dark .fi-sidebar-item > a:hover {
+    background: #18253a !important;
+    border-color: #2a3a52 !important;
+}
+
+.dark .fi-sidebar-item.fi-active > a {
+    background: rgba(15, 118, 110, .18) !important;
+    border-color: rgba(80, 180, 170, .22) !important;
+}
+
+.dark .fi-header-heading,
+.dark .fi-wi-stats-overview-stat-value,
+.dark .fi-simple-header-heading {
+    color: #f8fafc !important;
+}
+
+.dark .fi-header-subheading,
+.dark .fi-wi-stats-overview-stat-description,
+.dark .fi-ta-cell {
+    color: #cbd5e1 !important;
+}
+
+.dark .fi-ta-header-cell {
+    background: #162238 !important;
+    color: #cbd5e1 !important;
+}

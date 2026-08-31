@@ -8,8 +8,10 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
 use Laravel\Fortify\TwoFactorAuthenticatable;
+use Illuminate\Support\Facades\Storage;
+use Filament\Models\Contracts\HasAvatar;
 
-class User extends Authenticatable
+class User extends Authenticatable 
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, TwoFactorAuthenticatable;
@@ -60,5 +62,19 @@ class User extends Authenticatable
             ->take(2)
             ->map(fn ($word) => Str::substr($word, 0, 1))
             ->implode('');
+    }
+
+        public function getFilamentAvatarUrl(): ?string
+    {
+        // Catatan: Ganti 'foto' kalau nama kolom database lu beda
+        if ($this->foto) {
+            $path = Storage::disk('lokal')->path($this->foto);
+            
+            if ($this->foto && file_exists(base_path($this->foto))) {
+                $data = file_get_contents(base_path($this->foto));
+                return 'data:image/' . $tipe . ';base64,' . base64_encode($data);
+            }
+        }
+        return null; 
     }
 }

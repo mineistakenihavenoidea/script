@@ -47,6 +47,13 @@ return [
             'report' => false,
         ],
 
+        'lokal' => [
+            'driver' => 'local',
+            'root' => storage_path('app/lokal'),
+            'url' => env('APP_URL').'/private-storage',
+            'visibility' => 'private',
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),

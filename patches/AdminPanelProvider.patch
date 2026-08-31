@@ -1,0 +1,134 @@
+--- app/Providers/Filament/AdminPanelProvider.php
++++ app/Providers/Filament/AdminPanelProvider.php
+@@
+             ->colors([
+-                'primary' => Color::Blue,
+-                'secondary' => Color::Green,
++                'primary' => Color::Teal,
++                'secondary' => Color::Slate,
++                'info' => Color::Blue,
++                'success' => Color::Emerald,
++                'warning' => Color::Amber,
++                'danger' => Color::Rose,
+             ])
++            ->viteTheme('resources/css/filament/admin/theme.css')
+@@
+-            ->renderHook(
+-                PanelsRenderHook::HEAD_END,
+-                fn (): string =>
+-                    '<style>
+-                        body {
+-                            background-image: linear-gradient(rgba(15, 23, 42, 0.75), rgba(15, 23, 42, 0.85)), url("/storage/school.jpeg") !important;
+-                            background-size: cover !important;
+-                            background-position: center !important;
+-                            background-attachment: fixed !important;
+-                        }
+-
+-                        .fi-layout, .fi-main {
+-                            background-color: transparent !important;
+-                        }
+-                        .fi-topbar .fi-global-search,.fi-global-search {
+-                            display: none !important;
+-                        }
+-                        .fi-dropdown-panel, .fi-modal-window, .fi-no-notification {
+-                            background-color: rgba(255, 255, 255, 0.95) !important;
+-                            border-radius: 1rem !important;
+-                            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3) !important;
+-                        }
+-                        .dark .fi-dropdown-panel, .dark .fi-modal-window, .dark .fi-no-notification {
+-                            background-color: rgba(30, 41, 59, 0.95) !important;
+-                        }
+-                        .fi-simple-layout {
+-                            min-height: 100vh !important;
+-                            display: flex !important;
+-                            align-items: center !important;
+-                            justify-content: center !important;
+-                        }
+-                        .fi-simple-main {
+-                            width: 100% !important;
+-                            max-width: 28rem !important;
+-                            margin: 0 auto !important;
+-                        }
+-                        .fi-simple-main .fi-section {
+-                            background-color: rgba(255, 255, 255, 0.95) !important;
+-                            backdrop-filter: blur(10px) !important;
+-                            border-radius: 1rem !important;
+-                        }
+-                        .fi-simple-header {
+-                            display: flex !important;
+-                            flex-direction: column !important;
+-                            align-items: center !important;
+-                            text-align: center !important;
+-                            textcolor: #1e293b !important;
+-                        }
+-                        .fi-simple-layout .fi-logo {
+-                            justify-content: center !important;
+-                            margin: 0 auto !important;
+-                        }
+-
+-                        .fi-topbar {
+-                            background-color: rgba(255, 238, 0, 0.7) !important;
+-                            border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+-                        }
+-                        .fi-logo {
+-                            color: #ffffff !important;
+-                            text-shadow: 1px 1px 3px rgba(0,0,0,0.6);
+-                        }
+-                        .fi-main .fi-section, .fi-ta-content {
+-                            background-color: rgba(240, 253, 244, 0.9) !important;
+-                            border: 1px solid rgba(134, 239, 172, 0.4) !important;
+-                            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+-                        }
+-                        .dark .fi-main .fi-section, .dark .fi-ta-content {
+-                            background-color: rgb(0, 0, 0, 0.5) !important;
+-                        }
+-
+-                        .fi-wi-stats-overview-stat {
+-                            background-color: rgba(240, 253, 244, 0.9) !important;
+-                            border: 1px solid rgba(134, 239, 172, 0.4) !important;
+-                            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+-                            border-radius: 0.75rem !important;
+-                        }
+-                        .fi-wi-stats-overview .fi-section {
+-                            background: none !important;
+-                            border: none !important;
+-                            box-shadow: none !important;
+-                            backdrop-filter: none !important;
+-                        }
+-                        .dark .fi-wi-stats-overview .fi-section {
+-                            background: none !important;
+-                            border: none !important;
+-                            box-shadow: none !important;
+-                            backdrop-filter: none !important;
+-                        }
+-
+-                        .dark .fi-wi-stats-overview-stat {
+-                            background-color: rgba(30, 41, 59, 0.9) !important;
+-                        }
+-                        .fi-sidebar {
+-                            background-color: none !important;
+-                        }
+-
+-                        .dark .fi-sidebar {
+-                            background-color: none !important;
+-                        }
+-                        .fi-sidebar-item > a {
+-                            border-radius: 0.75rem !important;
+-                            background-color: rgba(255, 255, 255, 0.75) !important;
+-                            border: 1px solid rgba(134, 239, 172, 0.4) !important;
+-                        }
+-                        .dark .fi-sidebar-item > a {
+-                            background-color: rgba(30, 41, 59, 0.5) !important;
+-                            border: 1px solid rgba(134, 239, 172, 0.4) !important;
+-                        }
+-                        .fi-user-menu-label {
+-                            display: flex !important;
+-                            flex-direction: column !important;
+-                            align-items: flex-start !important;
+-                            line-height: 1.2 !important;
+-                            white-space: pre-wrap;
+-                        }
+-                    </style>'
+-            );
++            ;
+*** End Patch
