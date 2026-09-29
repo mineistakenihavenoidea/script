@@ -43,7 +43,8 @@ class PerkembanganInfolist
                             ->schema([
                                 ImageEntry::make('foto')
                                 ->hiddenLabel()
-                                ->formatStateUsing(fn ($state) => new HtmlString('<img src="/storage/' . $state . '" style="max-height: 80px; max-width: 80px; object-fit: cover; border-radius: 8px;">'))
+                                ->disk('lokal')
+                                ->formatStateUsing(fn ($state) => new HtmlString('<img src="/private-storage/' . $state . '" style="max-height: 80px; max-width: 80px; object-fit: cover; border-radius: 8px;">'))
                                 ->visible(fn ($state) => filled($state))
                                 ->size(175),
                                 // DATA (KANAN)
@@ -295,8 +296,8 @@ class PerkembanganInfolist
         $html = '<div class="grid grid-cols-1 gap-4">';
 
         $domains = [
-            'motorik_kasar'      => ['Motorik Kasar', 'fisik motorik'],
-            'motorik_halus'      => ['Motorik Halus', 'fisik motorik'],
+            'motorik_kasar'      => ['Motorik Kasar', 'motorik kasar'],
+            'motorik_halus'      => ['Motorik Halus', 'motorik halus'],
             'bahasa'             => ['Bahasa', 'bahasa'],
             'sosial_kemandirian' => ['Sosial Kemandirian', 'sosial kemandirian'],
         ];

@@ -36,6 +36,7 @@ class PerkembangansTable
                     ImageColumn::make('foto')
                         ->label('Foto')
                         ->circular()
+                        ->disk('lokal')
                         ->size(250),
                     TextColumn::make('status__kesimpulan')
                         ->label('Kesimpulan')

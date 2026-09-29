@@ -111,7 +111,7 @@ class PerkembanganForm
                             ->content(function (Get $get) {
                                 $foto = $get('foto');
                                 if ($foto) {
-                                    return new HtmlString('<img src="/storage/' . $foto . '" style="max-height: 150px; max-width: 150px; object-fit: cover; border-radius: 8px; border: 1px solid #444;">');
+                                    return new HtmlString('<img src="/private-storage/' . $foto . '" style="max-height: 150px; max-width: 150px; object-fit: cover; border-radius: 8px; border: 1px solid #444;">');
                                 }
                                 return 'Tidak ada foto';
                             }),

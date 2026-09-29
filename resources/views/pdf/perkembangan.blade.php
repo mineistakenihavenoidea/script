@@ -102,6 +102,105 @@
         </div>
         @endforeach
 
+        {{-- TABEL RIWAYAT TREN PERKEMBANGAN (PENGGANTI GRAFIK) --}}
+        @php
+            // Ambil riwayat yang tanggalnya HANYA SEBELUM ATAU SAMA DENGAN record yang sedang dicetak
+            $allHistory = \App\Models\Perkembangan::where('nama_siswa', $record->nama_siswa)
+                ->where('created_at', '<=', $record->created_at) // <-- INI KUNCI FOOL-PROOF NYA
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+            // Kelompokkan berdasarkan Tahun-Bulan, ambil yang paling akhir di tiap bulannya, lalu ambil 3 teratas
+            $latestHistory = $allHistory->groupBy(function ($item) {
+                return \Carbon\Carbon::parse($item->created_at)->format('Y-m');
+            })->map(function ($group) {
+                return $group->first(); 
+            })->values()->take(3); 
+
+            // Index 0 = Record yang sedang dicetak (Bulan Ini)
+            // Index 1 = Bulan Lalu
+            // Index 2 = 2 Bulan Lalu
+            $bulanIni = $latestHistory->get(0);
+            $bulanLalu = $latestHistory->get(1);
+            $duaBulanLalu = $latestHistory->get(2);
+
+            // Fungsi helper untuk format tanggal
+            $formatDate = function($model) {
+                return $model ? \Carbon\Carbon::parse($model->created_at)->translatedFormat('M Y') : '-';
+            };
+
+            // Fungsi helper untuk ambil nilai
+            $getVal = function($model, $field) {
+                return $model ? round($model->$field) : '-';
+            };
+
+            // Fungsi helper untuk indikator tren
+            $getTrend = function($now, $prev) {
+                if ($now === '-' || $prev === '-') return '-';
+                if ($now > $prev) return '<span style="color: #10b981; font-weight: bold;">&#9650; Naik</span>';
+                if ($now < $prev) return '<span style="color: #ef4444; font-weight: bold;">&#9660; Turun</span>';
+                return '<span style="color: #6b7280; font-weight: bold;">&#9644; Tetap</span>';
+            };
+        @endphp
+
+        <div style="margin-top: 25px; margin-bottom: 20px; page-break-inside: avoid;">
+            <h3 style="text-transform: uppercase; border-bottom: 2px solid #000; padding-bottom: 5px; margin-top: 0;">
+                Riwayat Tren Perkembangan
+            </h3>
+            <p style="font-size: 11px; margin-top: 3px; margin-bottom: 10px; font-style: italic;">
+                Perbandingan nilai siswa dalam 3 periode evaluasi terakhir.
+            </p>
+
+            <table class="score-table" style="text-align: center;">
+                <thead>
+                    <tr>
+                        <th style="text-align: left; width: 28%;">Domain Perkembangan</th>
+                        <th style="width: 18%;">{{ $formatDate($duaBulanLalu) }}</th>
+                        <th style="width: 18%;">{{ $formatDate($bulanLalu) }}</th>
+                        <th style="width: 18%; background-color: #e5e7eb;">{{ $formatDate($bulanIni) }}<br><small>(Saat Ini)</small></th>
+                        <th style="width: 18%;">Tren</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Motorik Kasar -->
+                    <tr>
+                        <td style="text-align: left; font-weight: bold; background-color: #f9fafb;">Motorik Kasar</td>
+                        <td>{{ $getVal($duaBulanLalu, 'nilai_motorik_kasar') }}</td>
+                        <td>{{ $getVal($bulanLalu, 'nilai_motorik_kasar') }}</td>
+                        <td style="font-weight: bold; background-color: #f3f4f6;">{{ $getVal($bulanIni, 'nilai_motorik_kasar') }}</td>
+                        <td>{!! $getTrend($getVal($bulanIni, 'nilai_motorik_kasar'), $getVal($bulanLalu, 'nilai_motorik_kasar')) !!}</td>
+                    </tr>
+                    
+                    <!-- Motorik Halus -->
+                    <tr>
+                        <td style="text-align: left; font-weight: bold; background-color: #f9fafb;">Motorik Halus</td>
+                        <td>{{ $getVal($duaBulanLalu, 'nilai_motorik_halus') }}</td>
+                        <td>{{ $getVal($bulanLalu, 'nilai_motorik_halus') }}</td>
+                        <td style="font-weight: bold; background-color: #f3f4f6;">{{ $getVal($bulanIni, 'nilai_motorik_halus') }}</td>
+                        <td>{!! $getTrend($getVal($bulanIni, 'nilai_motorik_halus'), $getVal($bulanLalu, 'nilai_motorik_halus')) !!}</td>
+                    </tr>
+
+                    <!-- Bahasa -->
+                    <tr>
+                        <td style="text-align: left; font-weight: bold; background-color: #f9fafb;">Bahasa</td>
+                        <td>{{ $getVal($duaBulanLalu, 'nilai_bahasa') }}</td>
+                        <td>{{ $getVal($bulanLalu, 'nilai_bahasa') }}</td>
+                        <td style="font-weight: bold; background-color: #f3f4f6;">{{ $getVal($bulanIni, 'nilai_bahasa') }}</td>
+                        <td>{!! $getTrend($getVal($bulanIni, 'nilai_bahasa'), $getVal($bulanLalu, 'nilai_bahasa')) !!}</td>
+                    </tr>
+
+                    <!-- Sosial Kemandirian -->
+                    <tr>
+                        <td style="text-align: left; font-weight: bold; background-color: #f9fafb;">Sosial Kemandirian</td>
+                        <td>{{ $getVal($duaBulanLalu, 'nilai_sosial_kemandirian') }}</td>
+                        <td>{{ $getVal($bulanLalu, 'nilai_sosial_kemandirian') }}</td>
+                        <td style="font-weight: bold; background-color: #f3f4f6;">{{ $getVal($bulanIni, 'nilai_sosial_kemandirian') }}</td>
+                        <td>{!! $getTrend($getVal($bulanIni, 'nilai_sosial_kemandirian'), $getVal($bulanLalu, 'nilai_sosial_kemandirian')) !!}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
         <div class="page-break">
             <h3 style="text-transform: uppercase; border-bottom: 2px solid #000; padding-bottom: 5px; margin-top: 0;">Ringkasan Penilaian & Kesimpulan</h3>
             
